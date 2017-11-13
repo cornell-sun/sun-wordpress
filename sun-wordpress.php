@@ -146,6 +146,7 @@ if ( !class_exists( 'SunAppExtension_Plugin' ) ) {
                         $media_sizes = $attachment->media_details->sizes;
                         $media_result["full"] = $media_sizes["full"]["source_url"];
                         $media_result["medium_large"] = $media_sizes["medium_large"]["source_url"];
+                        $media_result["square"] = $media_sizes["thumbnail"]["source_url"];
 
                         // TODO: Return the author info instead of id
                         $media_result["author_id"] = $attachment->author;
