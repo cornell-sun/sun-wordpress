@@ -40,6 +40,22 @@ if ( !class_exists( 'SunAppExtension_Plugin' ) ) {
                     $post_meta = get_post_meta( $post_arr["id"] );
                     $author_names = $post_meta["largo_byline_text"];
                     $users = array();
+                    if ( empty( $author_names ) ) {
+                        $author_id = $post_arr["author"];
+                        $user_obj = get_user_by( "id", $author_id );
+                        $user_meta = get_user_meta( $author_id );
+
+                        $user = array(
+                            "id"            => $author_id,
+                            "name"          => $user_obj->display_name,
+                            "avatar_url"    => get_avatar_url( $author_id ),
+                            "bio"           => $user_meta["description"][0],
+                            "link"          => get_author_posts_url( $author_id )
+                        );
+
+                        array_push($users, $user);
+                        return $users;
+                    }
                     foreach ($author_names as $name) {
                         $user_dict = array();
                         $user_dict["name"] = $name;
