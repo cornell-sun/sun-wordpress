@@ -21,9 +21,10 @@ if ( !class_exists( 'SunAppExtension_Plugin' ) ) {
          * Add all necessary actions to add desired information in Wordpress endpoints.
          */
         public static function init() {
-            add_action( 'rest_api_init', 'SunAppExtension_Plugin::posts_add_author_name' );
+            add_action( 'rest_api_init', 'SunAppExtension_Plugin::posts_add_author_dict' );
             add_action( 'rest_api_init', 'SunAppExtension_Plugin::posts_add_media_url' );
             add_action( 'rest_api_init', 'SunAppExtension_Plugin::posts_add_category_name' );
+            add_action( 'rest_api_init', 'SunAppExtension_Plugin::posts_add_primary_category');
             add_action( 'rest_api_init', 'SunAppExtension_Plugin::posts_add_tags_name' );
             add_action( 'rest_api_init', 'SunAppExtension_Plugin::posts_add_comments' );
             add_action( 'rest_api_init', 'SunAppExtension_Plugin::posts_add_type_enum' );
@@ -33,18 +34,34 @@ if ( !class_exists( 'SunAppExtension_Plugin' ) ) {
         /**
         * Return the string name of the post's author given a post.
         */
-        public static function posts_add_author_name( $data ) {
-            register_rest_field( 'post', 'author_string', array(
+        public static function posts_add_author_dict( $data ) {
+            register_rest_field( 'post', 'author_dict', array(
                 'get_callback' => function ( $post_arr ) {
-                    $user_obj = get_user_by( 'id', $post_arr['author'] );
-                    if ( empty( $user_obj ) ) {
-                        return new WP_Error(
-                            'rest_author_name_failed',
-                            __( "Failed to retrieve author's name from given post." ),
-                            array( 'status' => 500 )
-                        );
+                    $post_meta = get_post_meta( $post_arr["id"] );
+                    $author_names = $post_meta["largo_byline_text"];
+                    $users = array();
+                    foreach ($author_names as $name) {
+                        $user_dict = array();
+                        $user_dict["name"] = $name;
+
+                        $user_query = new WP_User_Query( array (
+                            'search' => $name,
+                            'search_columns' => array( 'display_name' )
+                        ));
+
+                        if ( !empty( $user_query->results ) ) {
+                            $first_res = $user_query->results[0];
+                            $user_id = $first_res->data->ID;
+                            $user_meta = get_user_meta( $user_id );
+
+                            $user_dict["id"] = $user_id;
+                            $user_dict["avatar_url"] = get_avatar_url( $user_id );
+                            $user_dict["bio"] = $user_meta["description"][0];
+                            $user_dict["link"] = get_author_posts_url( $user_id );
+                        }
+                        array_push( $users, $user_dict );
                     }
-                    return $user_obj->data->user_nicename;
+                    return $users;
                 }
             ));
         }
@@ -76,6 +93,30 @@ if ( !class_exists( 'SunAppExtension_Plugin' ) ) {
                         function ( $cat_id ) { return get_cat_name( $cat_id ); }, 
                         $categories
                     );
+                }
+            ));
+        }
+
+        /**
+         * Return the primary category this post is associated with. 
+         * This means we return the category with the smallest ID and 
+         * return News if no categories are attributed.
+         */
+        public static function posts_add_primary_category( $data ) {
+            register_rest_field( 'post', 'primary_category', array(
+                'get_callback' => function ( $post_arr ) {
+                    $categories = $post_arr["categories"];
+                    if ( empty( $categories ) ) {
+                        // no categories, return News = 1
+                        return "News";
+                    }
+                    $min_cat_id = -1;
+                    foreach ($categories as $cat) {
+                        if ( $cat > $min_id ) {
+                            $min_id = $cat;
+                        }
+                    }
+                    return get_cat_name( $min_cat_id );
                 }
             ));
         }
