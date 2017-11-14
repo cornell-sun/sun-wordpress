@@ -91,7 +91,7 @@ if ( !class_exists( 'SunAppExtension_Plugin' ) ) {
                 'get_callback' => function ( $post_arr ) {
                     $media_med_lg = wp_get_attachment_image_src( 
                         $post_arr["featured_media"],
-                        "medium-large"
+                        "medium_large"
                     );
 
                     $media_thumb = wp_get_attachment_image_src( 
