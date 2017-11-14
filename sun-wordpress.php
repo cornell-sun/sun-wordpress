@@ -73,11 +73,41 @@ if ( !class_exists( 'SunAppExtension_Plugin' ) ) {
         public static function posts_add_media_url( $data ) {
             register_rest_field( 'post', 'featured_media_url_string', array(
                 'get_callback' => function ( $post_arr ) {
-                    $media_obj = wp_get_attachment_image_src( 
+                    $media_med_lg = wp_get_attachment_image_src( 
                         $post_arr["featured_media"],
                         "medium-large"
                     );
-                    return $media_obj[0];
+
+                    $media_thumb = wp_get_attachment_image_src( 
+                        $post_arr["featured_media"],
+                        "thumbnail"
+                    );
+
+                    $media_full = wp_get_attachment_image_src( 
+                        $post_arr["featured_media"],
+                        "full"
+                    );
+
+                    $featured_media = array();
+                    $featured_media["medium_large"] = array(
+                        "url" => $media_med_lg[0],
+                        "width" => $media_med_lg[1],
+                        "height" => $media_med_lg[2]
+                    );
+
+                    $featured_media["thumbnail"] = array(
+                        "url" => $media_thumb[0],
+                        "width" => $media_thumb[1],
+                        "height" => $media_thumb[2]
+                    );
+
+                    $featured_media["full"] = array(
+                        "url" => $media_full[0],
+                        "width" => $media_full[1],
+                        "height" => $media_full[2]
+                    );
+
+                    return $featured_media;
                 }
             ));
         }
@@ -110,9 +140,9 @@ if ( !class_exists( 'SunAppExtension_Plugin' ) ) {
                         // no categories, return News = 1
                         return "News";
                     }
-                    $min_cat_id = -1;
+                    $min_cat_id = $categories[0];
                     foreach ($categories as $cat) {
-                        if ( $cat > $min_id ) {
+                        if ( $cat < $min_id ) {
                             $min_id = $cat;
                         }
                     }
@@ -179,20 +209,18 @@ if ( !class_exists( 'SunAppExtension_Plugin' ) ) {
                     $post_attachments = get_attached_media( "image", $post_arr["id"] );
                     $media_results = array();
                     foreach ( $post_attachments as $attachment ) {
-                        $media_result = array();
-                        $media_result["link"] = $attachment->link;
-                        $media_result["caption"] = $attachment->caption;
-                        $media_result["title"] = $attachment->title->rendered;
-
-                        $media_sizes = $attachment->media_details->sizes;
-                        $media_result["full"] = $media_sizes["full"]["source_url"];
-                        $media_result["medium_large"] = $media_sizes["medium_large"]["source_url"];
-                        $media_result["square"] = $media_sizes["thumbnail"]["source_url"];
-
-                        // TODO: Return the author info instead of id
-                        $media_result["author_id"] = $attachment->author;
-
-                        $media_results[ $attachment->ID ] = $media_result;
+                        $media_id = $attachment->ID;
+                        $media_meta = wp_get_attachment_metadata( $media_id );
+                        $author_id = $attachment->post_author;
+                        $media_obj = array(
+                            "id"            => $media_id,
+                            "caption"       => $attachment->post_excerpt,
+                            "media_type"    => $attachment->post_mime_type,
+                            "author_name"   => get_the_author_meta( 'display_name', $author_id ),
+                            "full"          => wp_get_attachment_url( $media_id, 'full' )
+                        );
+                        
+                        array_push( $media_results, $media_obj );
                     }
                     return $media_results;
                 }
