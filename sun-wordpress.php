@@ -230,13 +230,26 @@ if ( !class_exists( 'SunAppExtension_Plugin' ) ) {
                         $author_id = $attachment->post_author;
                         $media_obj = array(
                             "id"            => $media_id,
+                            "name"          => end( explode( "/", $media_meta["file"] ) ),
                             "caption"       => $attachment->post_excerpt,
                             "media_type"    => $attachment->post_mime_type,
                             "author_name"   => get_the_author_meta( 'display_name', $author_id ),
                             "full"          => wp_get_attachment_url( $media_id, 'full' )
                         );
                         
-                        array_push( $media_results, $media_obj );
+                        $media_results[] = $media_obj;
+                    }
+                    $rendered_content = stripslashes( $post_arr["content"]["rendered"] );
+                    $used_images = array();
+                    preg_match_all( "/<img .* src=(.*)\?re.* alt=.*>/", $rendered_content, $used_images );
+                    $used_images = array_map( function ($ele) {
+                        return end( explode( "/", $ele ) );
+                    }, $used_images[1] );
+
+                    foreach ($media_results as $id => $media ) {
+                        if (!in_array( $media["name"], $used_images ) ) {
+                            unset( $media_results[$id] );
+                        }
                     }
                     return $media_results;
                 }
