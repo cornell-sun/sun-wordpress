@@ -237,7 +237,7 @@ if ( !class_exists( 'SunAppExtension_Plugin' ) ) {
                             "full"          => wp_get_attachment_url( $media_id, 'full' )
                         );
                         
-                        $media_results[] = $media_obj;
+                        array_push( $media_results, $media_obj);
                     }
                     $rendered_content = stripslashes( $post_arr["content"]["rendered"] );
                     $used_images = array();
@@ -246,7 +246,7 @@ if ( !class_exists( 'SunAppExtension_Plugin' ) ) {
                         return end( explode( "/", $ele ) );
                     }, $used_images[1] );
 
-                    foreach ($media_results as $id => $media ) {
+                    foreach ($media_results as $media ) {
                         if (!in_array( $media["name"], $used_images ) ) {
                             unset( $media_results[$id] );
                         }
