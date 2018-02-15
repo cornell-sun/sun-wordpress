@@ -1,8 +1,8 @@
 # Sun-Wordpress Overview
 Wordpress plugin that extends the current core Wordpress functionality for the Cornell Sun iOS app
 
-# Added Functionality 
-Add additional information to the post object to prevent additional Wordpress API call 
+# Added Post Information 
+Add additional information to the post object to prevent additional Wordpress API call. Please note that all extra fields are located within the `post_info_dict` dictionary in the response.
 
 ## author_dict
 
@@ -77,7 +77,7 @@ String representing the lowest ID (most general) category string the post is a p
 
 Example output:
 ``` javascript
-"primary_category": "Full Court Press"
+"primary_category": "Sports"
 ```
 
 ## tag_strings
@@ -90,12 +90,6 @@ Example output:
     "Men's Basketball"
 ]
 ```
-
-## post_comments
-
-NOTE: Currently under revision and not reliable in its current state.
-
-List of comment dictionaries associated with the current post.
 
 ## post_type_enum
 
@@ -132,3 +126,37 @@ Example output:
     }
 ]
 ```
+
+## post_content_no_srcset
+
+Exactly equivalent to the rendered content in the normal API response, but with all instances of `srcset='...'` removed.
+
+Example output:
+``` javascript
+"post_content_no_srcset": "<p>Content here with image however no extra src set attribute <img src='google.com' /></p>"
+```
+
+# `/trending` Endpoint
+
+## Default response
+
+Returns top NUM_TRENDING_TAGS (currently 7) most popular tags as strings to be displayed in the search trending topics from the last 2 days.
+
+Example output:
+``` javascript
+[
+    "Top trending",
+    "Second most trending",
+    "Cornell University",
+    "Martha Pollack",
+    "Okenshields Playlist",
+    "161 Faces",
+    "Sex on Thursdays"
+]
+```
+
+# `/featured` Endpoint
+
+## Default response
+
+Returns the extended post object for the first post displayed prominently on the home page of cornellsun.com.
