@@ -23,6 +23,7 @@ if ( !class_exists( 'SunAppExtension_Plugin' ) ) {
         public static function init() {
             add_action( 'rest_api_init', 'SunAppExtension_Plugin::posts_add_author_dict' );
             add_action( 'rest_api_init', 'SunAppExtension_Plugin::posts_add_media_url' );
+            add_action( 'rest_api_init', 'SunAppExtension_Plugin::get_featured_media_caption' );
             add_action( 'rest_api_init', 'SunAppExtension_Plugin::posts_add_category_name' );
             add_action( 'rest_api_init', 'SunAppExtension_Plugin::posts_add_primary_category');
             add_action( 'rest_api_init', 'SunAppExtension_Plugin::posts_add_tags_name' );
@@ -199,6 +200,21 @@ if ( !class_exists( 'SunAppExtension_Plugin' ) ) {
                     );
 
                     return $featured_media;
+                }
+            ));
+        }
+
+        /**
+         * Return the string caption for the featured media for a given post with
+         * id = $post_id.
+         */
+        public static function get_featured_media_caption( $data ) {
+            register_rest_field( 'post', 'featured_media_caption', array(
+                'get_callback' => function ( $post_arr ) {
+                    $post_id = $post_arr["id"];
+                    $featured_media_id = (int)get_post_thumbnail_id( $post_id );
+                    $image = get_post( $featured_media_id );
+                    return $image->post_excerpt;
                 }
             ));
         }
