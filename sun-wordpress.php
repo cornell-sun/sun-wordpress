@@ -29,6 +29,81 @@ if ( !class_exists( 'SunAppExtension_Plugin' ) ) {
             add_action( 'rest_api_init', 'SunAppExtension_Plugin::posts_add_comments' );
             add_action( 'rest_api_init', 'SunAppExtension_Plugin::posts_add_type_enum' );
             add_action( 'rest_api_init', 'SunAppExtension_Plugin::posts_add_attachments' );
+            add_action( 'rest_api_init', 'SunAppExtension_Plugin::posts_add_content_no_srcset' );
+
+            add_action( 'rest_api_init', function () {
+                register_rest_route( 'sun-backend-extension/v1', '/trending', array(
+                    'methods' => 'GET',
+                    'callback' => 'SunAppExtension_Plugin::get_trending_tags',
+                ));
+                register_rest_route( 'sun-backend-extension/v1', '/featured', array(
+                    'methods' => 'GET',
+                    'callback' => 'SunAppExtension_Plugin::get_featured_home_post',
+                ));
+            } );
+        }
+
+        /**
+         * Return the top NUM_TRENDING_TAGS tags being used on the most popular
+         * 10 articles being read in the last few days.
+         */
+        public static function get_trending_tags() {
+            include_once( 'includes/sun-backend-config.php' );
+            $request_url = add_query_arg( array(
+                'api_key'   => JETPACK_API_KEY,
+                'blog_uri'  => get_home_url(),
+                'format'    => 'json',
+                'days'      => 2,
+                'table'     => 'postviews',
+                'limit'     => 10
+            ), esc_url( 'https://stats.wordpress.com/csv.php' ) );
+            $response = wp_remote_get( $request_url );
+            $data = json_decode( wp_remote_retrieve_body( $response ) );
+            // unsuccessful request, no trending results
+            if ( ! is_array( $data ) ) return array( "no trending tags" );
+            $results_arr = (array)$data[1]; // TODO: Understand why this is randomly 1
+            $postviews_arr = $results_arr["postviews"];
+            
+            $tag_counts = array();
+            foreach($postviews_arr as $post) {
+                $post_arr = (array)$post;
+                $post_tags = wp_get_post_tags( $post_arr["post_id"], array( 'fields' => 'names') );
+                foreach($post_tags as $tag) {
+                    if ( array_key_exists( $tag, $tag_counts ) ) {
+                        $tag_counts[$tag] += 1;
+                    } else {
+                        $tag_counts[$tag] = 1;
+                    }
+                }
+            }
+
+            // TODO: Put this into constants file
+            define( 'NUM_TRENDING_TAGS', 7);
+            $num_trending_tags = min( count( $tag_counts ), NUM_TRENDING_TAGS );
+
+            // TODO: optimize this to not be as suspect
+            $sorted_top_tags = array();
+            while ( count($sorted_top_tags) < $num_trending_tags ) {
+                $cur_most_popular = null;
+                $cur_max = 0;
+                foreach($tag_counts as $tag => $count) {
+                    if ( $count > $cur_max ) {
+                        $cur_most_popular = $tag;
+                        $cur_max = $count;
+                    }
+                }
+                array_push( $sorted_top_tags, $cur_most_popular );
+                unset( $tag_counts[$cur_most_popular] );
+            }
+            return $sorted_top_tags;
+        }
+
+        /**
+         * Return the entire post object corresponding to the featured
+         * post on the home page of cornellsun.com.
+         */
+        public static function get_featured_home_post() {
+            return largo_home_single_top();
         }
 
         /**
@@ -151,18 +226,20 @@ if ( !class_exists( 'SunAppExtension_Plugin' ) ) {
         public static function posts_add_primary_category( $data ) {
             register_rest_field( 'post', 'primary_category', array(
                 'get_callback' => function ( $post_arr ) {
-                    $categories = $post_arr["categories"];
-                    if ( empty( $categories ) ) {
+                    $categories = get_the_category( $post_id );
+                    if ( empty( $categories ) || !$categories ) {
                         // no categories, return News = 1
                         return "News";
                     }
-                    $min_cat_id = $categories[0];
-                    foreach ($categories as $cat) {
-                        if ( $cat < $min_id ) {
-                            $min_id = $cat;
+                    
+                    // linear search for minimum category id
+                    $min_category = $categories[0];
+                    foreach ($categories as $category) {
+                        if ( $category->term_id < $min_category->term_id ) {
+                            $min_category = $category;
                         }
                     }
-                    return get_cat_name( $min_cat_id );
+                    return $min_category->name;
                 }
             ));
         }
@@ -252,6 +329,17 @@ if ( !class_exists( 'SunAppExtension_Plugin' ) ) {
                         }
                     }
                     return $media_results;
+                }
+            ));
+        }
+
+        public static function posts_add_content_no_srcset( $data ) {
+            register_rest_field( 'post', 'post_content_no_srcset', array(
+                'get_callback' => function ( $post_arr ) {
+                    $post_content = get_the_content( $post_id );
+                    $rendered_content = stripslashes( apply_filters( 'the_content', $post_content ) );
+                    $content_srcset_removed = preg_replace( "/srcset=\".*\"/", '', $rendered_content );
+                    return $content_srcset_removed;
                 }
             ));
         }
