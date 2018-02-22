@@ -48,17 +48,18 @@ class SunAppExtension_PostsFunctions {
             // no byline author text, default to normal author
             $author_id = (int)$post->post_author;
             $user_obj = get_user_by( "id", $author_id );
-            $user_meta = get_user_meta( $author_id );
+//            $user_meta = get_user_meta( $author_id );
+            $user = $user_obj->display_name;
 
-            $user = array(
-                "id"            => $author_id,
-                "name"          => $user_obj->display_name,
-                "avatar_url"    => get_avatar_url($author_id),
-                "bio"           => $user_meta["description"][0],
-                "link"          => get_author_posts_url($author_id),
-            );
+//            $user = array(
+//                "id"            => $author_id,
+//                "name"          => $user_obj->display_name,
+//                "avatar_url"    => get_avatar_url($author_id),
+//                "bio"           => $user_meta["description"][0],
+//                "link"          => get_author_posts_url($author_id),
+//            );
 
-            return [ $user ];
+            return [ [ "name" => $user ] ];
         }
 
         $users = array();
@@ -71,19 +72,23 @@ class SunAppExtension_PostsFunctions {
 
             if ( !empty( $user_query->results ) ) {
                 // query found user entry, add it to the array
-                $first_res = $user_query->results[0];
-                $user_id = $first_res->data->ID;
-                $user_meta = get_user_meta( $user_id );
+//                $first_res = $user_query->results[0];
+//                $user_id = $first_res->data->ID;
+//                $user_meta = get_user_meta( $user_id );
+                $name_dict = [ "name" => $name ];
+//                $user_dict = array(
+//                    "id"            => $user_id,
+//                    "name"          => $name,
+//                    "avatar_url"    => get_avatar_url( $user_id ),
+//                    "bio"           => $user_meta["description"][0],
+//                    "link"          => get_author_posts_url( $user_id ),
+//                );
 
-                $user_dict = array(
-                    "id"            => $user_id,
-                    "name"          => $name,
-                    "avatar_url"    => get_avatar_url( $user_id ),
-                    "bio"           => $user_meta["description"][0],
-                    "link"          => get_author_posts_url( $user_id ),
-                );
-
-                array_push( $users, $user_dict );
+                array_push( $users, $name_dict );
+            } else {
+                // empty results, just return the name for now
+                $name_dict = [ "name" => $name ];
+                array_push( $users, $name_dict );
             }
         }
         return $users;
