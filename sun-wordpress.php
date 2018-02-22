@@ -16,17 +16,17 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 if ( !class_exists( 'SunAppExtension_Plugin' ) ) {
 
-    include_once( 'functions/sun-backend-posts-functions.php' );
-    include_once( 'endpoints/sun-backend-featured-endpoint.php' );
-    include_once( 'endpoints/sun-backend-trending-endpoint.php' );
-    include_once( 'includes/sun-backend-constants.php' );
-
     class SunAppExtension_Plugin {
 
         /**
          * Add all necessary actions to add desired information in Wordpress endpoints.
          */
         public static function init() {
+
+            include_once( 'endpoints/sun-backend-featured-endpoint.php' );
+            include_once( 'endpoints/sun-backend-trending-endpoint.php' );
+            include_once( 'includes/sun-backend-constants.php' );
+
             // add post_info_dict to each of the posts requested
             add_action( 'rest_api_init', 'SunAppExtension_Plugin::get_post_info_dict' );
 
@@ -49,6 +49,7 @@ if ( !class_exists( 'SunAppExtension_Plugin' ) ) {
          * register it as a field to be returned for each of the posts requested.
          */
         public static function get_post_info_dict( $data ) {
+            include_once( 'functions/sun-backend-posts-functions.php' );
             register_rest_field( 'post', 'post_info_dict', array(
                 'get_callback' => function ( $post_arr ) {
                     return SunAppExtension_PostsFunctions::generate_post_entry( $post_arr["id"] );

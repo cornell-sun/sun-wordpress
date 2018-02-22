@@ -4,16 +4,17 @@
  * in the last few days.
  */
 
-include_once( '../includes/sun-backend-constants.php' );
-include_once( '../includes/sun-backend-config.php' );
-
-class SunAppExtension_TrendingEndpoint{
+class SunAppExtension_TrendingEndpoint {
 
     /**
      * Return the top NUM_TRENDING_TAGS tags being used on the most popular
      * 10 articles being read in the last few days.
      */
     public static function get_trending_tags() {
+
+        include_once( "../includes/sun-backend-constants.php" );
+        include_once( '../includes/sun-backend-config.php' );
+
         $request_url = add_query_arg( array(
             'api_key'   => JETPACK_API_KEY,
             'blog_uri'  => get_home_url(),
