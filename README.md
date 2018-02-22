@@ -7,23 +7,13 @@ Add additional information to the post object to prevent additional Wordpress AP
 ## author_dict
 
 List of author dictionaries
-* id: int -- the unique identifier for an author in the Wordpress DB
 * name: String -- the display name of the author on the website
-* avatar_url: String -- the URL to the author's avatar image
-* bio: String -- the author's bio snippet
-* link: String -- the URL to the articles posted by a given author.
-
-Note: If there is not a corresponding author object for the given name, only the name will be returned.
 
 Example output:
 ``` javascript
 "author_dict": [
     {
-        "id": 746,
-        "name": "BreAnne Fleer",
-        "avatar_url": "http://1.gravatar.com/avatar/1e4d0b9587d009b746fd30cf32729214?s=96&d=mm&r=g",
-        "bio": "BreAnne Fleer is a member of the Class of 2020 in the College of Arts and Sciences. She is a staff writer for the News department and can be reached at bfleer@cornellsun.com.",
-        "link": "http://cornellsun.com/author/breannefleer/"
+        "name": "BreAnne Fleer"
     }
 ]
 ```
