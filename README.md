@@ -48,6 +48,21 @@ Example output:
 }
 ```
 
+## featured_media_caption
+
+String caption for a given post's featured image. Empty string if no associated caption or no featured image.
+``` javascript
+"featured_media_caption": "Granting the popular bar and pizza joint landmark status would prevent significant exterior modifications."
+```
+
+## featured_media_credit
+
+String name of the photographer credited with taking a post's featured image. 
+**Note:** Null if credit is stored in the caption field or no image associated with the given post.
+
+``` javascript
+"featured_media_credit": "Cameron Pollack / Sun Photography Editor"
+```
 
 ## category_strings
 
