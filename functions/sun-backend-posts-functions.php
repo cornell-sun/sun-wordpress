@@ -272,7 +272,7 @@ class SunAppExtension_PostsFunctions {
      * given post with id $post_id.
      */
     public static function get_content_no_srcset( $post_id ) {
-        $post_content = get_the_content( $post_id );
+        $post_content = get_post_field( 'post_content', $post_id );
         $rendered_content = stripslashes( apply_filters( 'the_content', $post_content ) );
         $content_srcset_removed = preg_replace( "/srcset=\".*\"/", '', $rendered_content );
 
