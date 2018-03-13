@@ -31,7 +31,7 @@ class SunAppExtension_PostsFunctions {
             'primary_category'          => SunAppExtension_PostsFunctions::get_primary_category( $post_id ),
             'tag_strings'               => SunAppExtension_PostsFunctions::get_tag_names( $post_id ),
             'post_type_enum'            => SunAppExtension_PostsFunctions::get_post_type_enum( $post_id ),
-            'post_attachments_meta'     => SunAppExtension_PostsFunctions::get_post_image_attachments( $post_id ),
+            'post_attachments_meta'     => SunAppExtension_PostsFunctions::get_post_enum_metadata( $post_id ),
             'post_content_no_srcset'    => SunAppExtension_PostsFunctions::get_content_no_srcset( $post_id )
         );
     }
@@ -206,23 +206,61 @@ class SunAppExtension_PostsFunctions {
     }
 
     /**
-     * Returns whether a given post with id $post_id is a photoGallery
-     * (this week in photos) or simply another article to those requesting
+     * Returns whether a given post with id $post_id is a photoGallery, video,
+     * slideshow, (this week in photos) or simply another article to those requesting
      * a post.
      */
     public static function get_post_type_enum( $post_id ) {
-        $post = get_post( $post_id );
-        $title = $post->post_title;
+        $categories = get_the_category( $post_id );
 
-        if ( strpos( strtolower( $title ), "this week in photos" ) !== false) {
-            // photo gallery
-            return "photoGallery";
-        } else {
-            // normal article for now
-            return "article";
-        }
+        foreach ($categories as $category) {
+          if ( strpos( strtolower( $category ), "photo gallery" ) !== false) {
+              // photo gallery
+              return "photoGallery";
+          } elseif (strpos ( strtolower( $category ), "video") !== false){
+              // video
+              return "video";
+          } elseif (strpos ( strtolower( $category ), "slideshow") !== false){
+              // slideshow
+            return "slideshow";
+          } else {
+              // normal article for now
+              return "article";
+          }
+      }
     }
 
+    /**
+    * Returns the URLs, captions, and other necessary metadata for image attachments or
+    * video, or slideshows, or articles based on the $type_enum of a $post_id
+    */
+    public static function get_post_enum_metadata( $post_id ) {
+
+      $type_enum = get_post_type_enum ( $post_id );
+
+      if (strcmp($type_enum, "photoGallery") == 0){
+        return get_post_image_attachments ( $post_id );
+      } elseif (strcmp($type_enum, "video") == 0){
+        return get_post_video_attachments( $post_id );
+      } elseif (strcmp($type_enum, "slideshow") == 0){
+        return get_post_slideshow_attachments ( $post_id );
+      }
+
+    }
+    /**
+    * Return the URLs, captions, and other necessary metadata for all the video
+    * attachments associated with a single post with id $post_id.
+    */
+    public static function get_post_video_attachments ( $post_id ) {
+
+    }
+    /**
+    * Return the URLs, captions, and other necessary metadata for all the slideshow
+    * attachments associated with a single post with id $post_id.
+    */
+    public static function get_post_slideshow_attachments ( $post_id ) {
+
+    }
     /**
      * Return the URLs, captions, and other necessary metadata for all the image
      * attachments associated with a single post with id $post_id. Guaranteed to
