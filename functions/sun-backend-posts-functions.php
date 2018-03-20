@@ -48,7 +48,7 @@ class SunAppExtension_PostsFunctions {
             'tag_strings'               => SunAppExtension_PostsFunctions::get_tag_names( $post_id ),
             'post_type_enum'            => SunAppExtension_PostsFunctions::get_post_type_enum( $post_id ),
             'post_attachments_meta'     => SunAppExtension_PostsFunctions::get_post_image_attachments( $post_id ),
-            'post_content_no_srcset'    => SunAppExtension_PostsFunctions::get_content_no_srcset( $post_id ),
+            'post_content_no_srcset'    => SunAppExtension_PostsFunctions::get_content_no_srcset( $post_id )
         );
 
     }
