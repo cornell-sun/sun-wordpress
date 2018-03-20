@@ -211,16 +211,20 @@ class SunAppExtension_PostsFunctions {
      * a post.
      */
     public static function get_post_type_enum( $post_id ) {
-        $categories = get_the_category( $post_id );
+        $category_names = SunAppExtension_PostsFunctions::get_category_names( $post_id );
 
-        foreach ($categories as $category) {
-          if ( strpos( strtolower( $category ), "photo gallery" ) !== false) {
+        $post = get_post( $post_id );
+        $title = $post->post_title;
+
+        foreach ($category_names as $name) {
+          //temporary look at title instead of the actual categories
+          if ( strpos( strtolower( $title ), "this week in photos" ) !== false ) {
               // photo gallery
               return "photoGallery";
-          } elseif (strpos ( strtolower( $category ), "video") !== false){
+          } elseif ( strpos ( strtolower( $title ), "video") !== false ){
               // video
               return "video";
-          } elseif (strpos ( strtolower( $category ), "slideshow") !== false){
+          } elseif (strpos ( strtolower( $name ), "slideshow") !== false){
               // slideshow
             return "slideshow";
           } else {
@@ -236,7 +240,7 @@ class SunAppExtension_PostsFunctions {
     */
     public static function get_post_enum_metadata( $post_id ) {
 
-      $type_enum = get_post_type_enum ( $post_id );
+      $type_enum = SunAppExtension_PostsFunctions::get_post_type_enum ( $post_id );
 
       if (strcmp($type_enum, "photoGallery") == 0){
         return get_post_image_attachments ( $post_id );
@@ -244,15 +248,42 @@ class SunAppExtension_PostsFunctions {
         return get_post_video_attachments( $post_id );
       } elseif (strcmp($type_enum, "slideshow") == 0){
         return get_post_slideshow_attachments ( $post_id );
+      } else {
+        return array(); 
       }
-
     }
     /**
     * Return the URLs, captions, and other necessary metadata for all the video
     * attachments associated with a single post with id $post_id.
     */
     public static function get_post_video_attachments ( $post_id ) {
+      $post_attachments = get_attached_media( "video" , $post_id);
 
+      $media_results = array();
+
+      foreach ( $post_attachments as $attachment ) {
+        $media_id = $attachment->ID;
+        $media_meta = wp_get_attachment_metadata( $media_id );
+        $author_id  = $attachment->post_author;
+        $media_obj = array(
+          "id"              => $media_id,
+          "name"            => end( explode( "/", $media_meta["file"] ) ),
+          "caption"         => $attachment->post_excerpt,
+          "media_type"      => $attachment->post_mime_type,
+          "author_name"     => get_the_author_meta( 'display_name', $author_id),
+          "full"            => wp_get_attachment_url ( $media_id, 'full' )
+        );
+        array_push( $media_results, $media_obj );
+      }
+
+      $post_content = get_the_content( $post_id );
+      $rendered_content = stripslashes( apply_filters( 'the_content', $post_content ));
+
+      $result = array();
+      foreach ($media_results as $media) {
+        array_push($result, $media);
+      }
+      return $result;
     }
     /**
     * Return the URLs, captions, and other necessary metadata for all the slideshow
@@ -267,7 +298,7 @@ class SunAppExtension_PostsFunctions {
      * be populated only on photoGallery posts (THIS WEEK IN PHOTOS).
      */
     public static function get_post_image_attachments( $post_id ) {
-        $post_attachments = get_attached_media( "image", $post_id );
+        $post_attachments = get_attached_media( "image" , $post_id );
 
         $media_results = array();
         foreach ( $post_attachments as $attachment ) {
