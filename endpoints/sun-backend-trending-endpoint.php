@@ -7,6 +7,20 @@
 class SunAppExtension_TrendingEndpoint {
 
     /**
+     * Initialize and register everything necessary for the /trending endpoint to
+     * run properly.
+     */
+    public static function init() {
+        $cur_file_path = plugin_dir_path( __FILE__ );
+        include_once( $cur_file_path . "../includes/sun-backend-constants.php" );
+
+        register_rest_route( PLUGIN_ENDPOINT . '/' . PRODUCTION_VERSION, '/trending', array(
+            'methods' => 'GET',
+            'callback' => 'SunAppExtension_TrendingEndpoint::get_trending_tags',
+        ));
+    }
+
+    /**
      * Return the top NUM_TRENDING_TAGS tags being used on the most popular
      * 10 articles being read in the last few days.
      */
