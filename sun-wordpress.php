@@ -24,6 +24,7 @@ if ( !class_exists( 'SunAppExtension_Plugin' ) ) {
         public static function init() {
             include_once( 'endpoints/sun-backend-featured-endpoint.php' );
             include_once( 'endpoints/sun-backend-trending-endpoint.php' );
+            include_once( 'endpoints/sun-backend-comments-endpoint.php' );
             include_once( 'includes/sun-backend-constants.php' );
 
             // add post_info_dict to each of the posts requested
@@ -33,6 +34,7 @@ if ( !class_exists( 'SunAppExtension_Plugin' ) ) {
             add_action( 'rest_api_init', function () {
                 SunAppExtension_TrendingEndpoint::init();
                 SunAppExtension_FeaturedEndpoint::init();
+                SunAppExtension_CommentsEndpoint::init();
             } );
 
         }
