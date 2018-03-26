@@ -22,7 +22,23 @@ class SunAppExtension_PostsFunctions {
      *      ~ post_content_no_srcset - rendered content string with all srcset attributes stripped
      */
     public static function generate_post_entry( $post_id ) {
+        $post = get_post( $post_id );
+        $date_val = str_replace(" ", "T", $post->post_date );
+        $title_val = array( "rendered" => $post->post_title );
+        $rendered_content = stripslashes( apply_filters( 'the_content', $post->post_content ) );
+        $content_val = array( "rendered" => $rendered_content );
+        $excerpt_val = array( "rendered" => get_the_excerpt( $post_id ) );
+        $link_val = $post->guid;
+        $author_val = (int) $post->post_author;
+
         return array(
+            'id'                        => $post_id,
+            'date'                      => $date_val,
+            'title'                     => $title_val,
+            'content'                   => $content_val,
+            'excerpt'                   => $excerpt_val,
+            'link'                      => $link_val,
+            'author'                    => $author_val,
             'author_dict'               => SunAppExtension_PostsFunctions::get_author_dict( $post_id ),
             'featured_media_url_string' => SunAppExtension_PostsFunctions::get_featured_media_urls( $post_id ),
             'featured_media_caption'    => SunAppExtension_PostsFunctions::get_featured_media_caption( $post_id ),
@@ -34,6 +50,7 @@ class SunAppExtension_PostsFunctions {
             'post_attachments_meta'     => SunAppExtension_PostsFunctions::get_post_image_attachments( $post_id ),
             'post_content_no_srcset'    => SunAppExtension_PostsFunctions::get_content_no_srcset( $post_id )
         );
+
     }
 
     /**
@@ -288,6 +305,7 @@ class SunAppExtension_PostsFunctions {
         $image_meta = get_post_meta( $featured_media_id );
         return $image_meta["_media_credit"][0];
     }
+
 }
 
 ?>
