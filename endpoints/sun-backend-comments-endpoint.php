@@ -97,6 +97,7 @@ class SunAppExtension_CommentsEndpoint {
 
             // TODO: Account for the pagination case
             // TODO: Try and find a way to do this efficiently
+            // TODO: Figure out why there's occasionally missing comments on random URLs
             $graphNodeArr = $urlCommentsResponse->getGraphNode()->asArray();
             $ogObject = $graphNodeArr["og_object"];
             $ogObjectComments = $ogObject["comments"];
