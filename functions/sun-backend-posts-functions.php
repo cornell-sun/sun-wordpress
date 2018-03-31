@@ -23,16 +23,16 @@ class SunAppExtension_PostsFunctions {
      */
     public static function generate_post_entry( $post_id ) {
         return array(
-            'author_dict'               => SunAppExtension_PostsFunctions::get_author_dict( $post_id ),
-            'featured_media_url_string' => SunAppExtension_PostsFunctions::get_featured_media_urls( $post_id ),
-            'featured_media_caption'    => SunAppExtension_PostsFunctions::get_featured_media_caption( $post_id ),
-            'featured_media_credit'     => SunAppExtension_PostsFunctions::get_featured_media_credits( $post_id ),
-            'category_strings'          => SunAppExtension_PostsFunctions::get_category_names( $post_id ),
-            'primary_category'          => SunAppExtension_PostsFunctions::get_primary_category( $post_id ),
-            'tag_strings'               => SunAppExtension_PostsFunctions::get_tag_names( $post_id ),
-            'post_type_enum'            => SunAppExtension_PostsFunctions::get_post_type_enum( $post_id ),
-            'post_attachments_meta'     => SunAppExtension_PostsFunctions::get_post_enum_metadata( $post_id ),
-            'post_content_no_srcset'    => SunAppExtension_PostsFunctions::get_content_no_srcset( $post_id )
+            'author_dict'               => self::get_author_dict( $post_id ),
+            'featured_media_url_string' => self::get_featured_media_urls( $post_id ),
+            'featured_media_caption'    => self::get_featured_media_caption( $post_id ),
+            'featured_media_credit'     => self::get_featured_media_credits( $post_id ),
+            'category_strings'          => self::get_category_names( $post_id ),
+            'primary_category'          => self::get_primary_category( $post_id ),
+            'tag_strings'               => self::get_tag_names( $post_id ),
+            'post_type_enum'            => self::get_post_type_enum( $post_id ),
+            'post_attachments_meta'     => self::get_post_enum_metadata( $post_id ),
+            'post_content_no_srcset'    => self::get_content_no_srcset( $post_id )
         );
     }
 
@@ -211,7 +211,7 @@ class SunAppExtension_PostsFunctions {
      * a post.
      */
     public static function get_post_type_enum( $post_id ) {
-        $category_names = SunAppExtension_PostsFunctions::get_category_names( $post_id );
+        $category_names = self::get_category_names( $post_id );
 
         $post = get_post( $post_id );
         $title = $post->post_title;
@@ -240,57 +240,83 @@ class SunAppExtension_PostsFunctions {
     */
     public static function get_post_enum_metadata( $post_id ) {
 
-      $type_enum = SunAppExtension_PostsFunctions::get_post_type_enum ( $post_id );
+      $type_enum = self::get_post_type_enum ( $post_id );
 
       if (strcmp($type_enum, "photoGallery") == 0){
-        return get_post_image_attachments ( $post_id );
+        return self::get_post_image_attachments ( $post_id );
       } elseif (strcmp($type_enum, "video") == 0){
-        return get_post_video_attachments( $post_id );
-      } elseif (strcmp($type_enum, "slideshow") == 0){
-        return get_post_slideshow_attachments ( $post_id );
+        return self::get_post_video_attachments( $post_id );
+      } //elseif (strcmp($type_enum, "slideshow") == 0){
+        elseif ( $post_id = 61213 ) {
+        return self::get_post_slideshow_attachments ( $post_id );
       } else {
-        return array(); 
+        return array();
       }
     }
     /**
     * Return the URLs, captions, and other necessary metadata for all the video
-    * attachments associated with a single post with id $post_id.
+    * attachments associated with a single post with id $post_id. Look for iframe or video tag
+    * and look for source of the video
     */
     public static function get_post_video_attachments ( $post_id ) {
-      $post_attachments = get_attached_media( "video" , $post_id);
+      //Gets raw html content
+      $post_content = self::get_content_no_srcset( $post_id );
 
-      $media_results = array();
+      $rendered_content = stripslashes( apply_filters( 'the_content', $post_content ) );
+      $used_video = array();
 
-      foreach ( $post_attachments as $attachment ) {
-        $media_id = $attachment->ID;
-        $media_meta = wp_get_attachment_metadata( $media_id );
-        $author_id  = $attachment->post_author;
-        $media_obj = array(
-          "id"              => $media_id,
-          "name"            => end( explode( "/", $media_meta["file"] ) ),
-          "caption"         => $attachment->post_excerpt,
-          "media_type"      => $attachment->post_mime_type,
-          "author_name"     => get_the_author_meta( 'display_name', $author_id),
-          "full"            => wp_get_attachment_url ( $media_id, 'full' )
-        );
-        array_push( $media_results, $media_obj );
-      }
+      //Regex for getting the video URL
+      preg_match_all ( "/<iframe.*src=(.* ).*frameborder.*><\/iframe>/", $post_content, $used_video);
+      $video = $used_video[1];
 
-      $post_content = get_the_content( $post_id );
-      $rendered_content = stripslashes( apply_filters( 'the_content', $post_content ));
-
-      $result = array();
-      foreach ($media_results as $media) {
-        array_push($result, $media);
-      }
-      return $result;
+      //Filter out any extraneous characters
+      $video = preg_replace("/( )|(')|(\\\")/", "", $video);
+      
+      return $video;
     }
     /**
     * Return the URLs, captions, and other necessary metadata for all the slideshow
     * attachments associated with a single post with id $post_id.
     */
     public static function get_post_slideshow_attachments ( $post_id ) {
+      $post_attachments = get_attached_media( "image" , $post_id );
 
+      $media_results = array();
+
+      foreach ( $post_attachments as $attachment ) {
+          $media_id = $attachment->ID;
+          $media_meta = wp_get_attachment_metadata( $media_id );
+          $author_id = $attachment->post_author;
+          $media_obj = array(
+              "id"            => $media_id,
+              "name"          => end( explode( "/", $media_meta["file"] ) ),
+              "caption"       => $attachment->post_excerpt,
+              "media_type"    => $attachment->post_mime_type,
+              "author_name"   => get_the_author_meta( 'display_name', $author_id ),
+              "full"          => wp_get_attachment_url( $media_id, 'full' )
+          );
+
+          array_push( $media_results, $media_obj );
+      }
+      $post_content = get_the_content( $post_id );
+      $rendered_content = stripslashes( apply_filters( 'the_content', $post_content) );
+      $used_images = array();
+      preg_match_all ( "/<img.*data-lazy=(.*\.jpg)/", $rendered_content, $used_images );
+
+      $used_images = array_map(
+          function ( $ele ) { return end( explode( "/", $ele ) ); },
+          $used_images[1]
+      );
+
+      $result = array();
+      foreach ( $media_results as $media ) {
+          if ( in_array( $media["name"], $used_images ) ) {
+              array_push( $result, $media );
+          }
+      }
+
+
+      return $result;
     }
     /**
      * Return the URLs, captions, and other necessary metadata for all the image
