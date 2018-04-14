@@ -206,32 +206,20 @@ class SunAppExtension_PostsFunctions {
     }
 
     /**
-     * Returns whether a given post with id $post_id is a photoGallery, video,
-     * slideshow, (this week in photos) or simply another article to those requesting
-     * a post.
+     * returns whether a given post with id $post_id is a photoGallery or video
+     * or simply another article based on the categories associated with the post
+     *
      */
     public static function get_post_type_enum( $post_id ) {
         $category_names = self::get_category_names( $post_id );
 
-        $post = get_post( $post_id );
-        $title = $post->post_title;
-
-        foreach ($category_names as $name) {
-          //temporary look at title instead of the actual categories
-          if ( strpos( strtolower( $title ), "this week in photos" ) !== false ) {
-              // photo gallery
-              return "photoGallery";
-          } elseif ( strpos ( strtolower( $title ), "video") !== false ){
-              // video
-              return "video";
-          } elseif (strpos ( strtolower( $name ), "slideshow") !== false){
-              // slideshow
-            return "slideshow";
-          } else {
-              // normal article for now
-              return "article";
-          }
-      }
+        if ( isset($category_names["Video"]) ) {
+          return "video";
+        } else if ( isset($category_names["Photo Gallery"]) ) {
+          return "photoGallery";
+        } else {
+          return "article";
+        }
     }
 
     /**
@@ -241,22 +229,18 @@ class SunAppExtension_PostsFunctions {
     public static function get_post_enum_metadata( $post_id ) {
 
       $type_enum = self::get_post_type_enum ( $post_id );
-
-      if (strcmp($type_enum, "photoGallery") == 0){
+      if ( strcmp( $type_enum, "photoGallery" ) == 0 ){
         return self::get_post_image_attachments ( $post_id );
-      } elseif (strcmp($type_enum, "video") == 0){
+      } elseif ( strcmp($type_enum, "video" ) == 0 ){
         return self::get_post_video_attachments( $post_id );
-      } //elseif (strcmp($type_enum, "slideshow") == 0){
-        elseif ( $post_id = 61213 ) {
-        return self::get_post_slideshow_attachments ( $post_id );
       } else {
         return array();
       }
     }
     /**
     * Return the URLs, captions, and other necessary metadata for all the video
-    * attachments associated with a single post with id $post_id. Look for iframe or video tag
-    * and look for source of the video
+    * attachments associated with a single post with id $post_id. Use regex to match
+    * for iframe or video tags in the content and look for source of the video
     */
     public static function get_post_video_attachments ( $post_id ) {
       //Gets raw html content
@@ -265,68 +249,27 @@ class SunAppExtension_PostsFunctions {
       $rendered_content = stripslashes( apply_filters( 'the_content', $post_content ) );
       $used_video = array();
 
-      //Regex for getting the video URL
+      //Regex for getting the video URL from $post_content
       preg_match_all ( "/<iframe.*src=(.* ).*frameborder.*><\/iframe>/", $post_content, $used_video);
       $video = $used_video[1];
 
       //Filter out any extraneous characters
       $video = preg_replace("/( )|(')|(\\\")/", "", $video);
-      
+
       return $video;
     }
-    /**
-    * Return the URLs, captions, and other necessary metadata for all the slideshow
-    * attachments associated with a single post with id $post_id.
-    */
-    public static function get_post_slideshow_attachments ( $post_id ) {
-      $post_attachments = get_attached_media( "image" , $post_id );
 
-      $media_results = array();
-
-      foreach ( $post_attachments as $attachment ) {
-          $media_id = $attachment->ID;
-          $media_meta = wp_get_attachment_metadata( $media_id );
-          $author_id = $attachment->post_author;
-          $media_obj = array(
-              "id"            => $media_id,
-              "name"          => end( explode( "/", $media_meta["file"] ) ),
-              "caption"       => $attachment->post_excerpt,
-              "media_type"    => $attachment->post_mime_type,
-              "author_name"   => get_the_author_meta( 'display_name', $author_id ),
-              "full"          => wp_get_attachment_url( $media_id, 'full' )
-          );
-
-          array_push( $media_results, $media_obj );
-      }
-      $post_content = get_the_content( $post_id );
-      $rendered_content = stripslashes( apply_filters( 'the_content', $post_content) );
-      $used_images = array();
-      preg_match_all ( "/<img.*data-lazy=(.*\.jpg)/", $rendered_content, $used_images );
-
-      $used_images = array_map(
-          function ( $ele ) { return end( explode( "/", $ele ) ); },
-          $used_images[1]
-      );
-
-      $result = array();
-      foreach ( $media_results as $media ) {
-          if ( in_array( $media["name"], $used_images ) ) {
-              array_push( $result, $media );
-          }
-      }
-
-
-      return $result;
-    }
     /**
      * Return the URLs, captions, and other necessary metadata for all the image
-     * attachments associated with a single post with id $post_id. Guaranteed to
-     * be populated only on photoGallery posts (THIS WEEK IN PHOTOS).
+     * attachments associated with a single post with id $post_id.
      */
     public static function get_post_image_attachments( $post_id ) {
         $post_attachments = get_attached_media( "image" , $post_id );
 
         $media_results = array();
+        /* Create an array of $media_obj which contain a bunch of metadata
+         * associated with a post
+         */
         foreach ( $post_attachments as $attachment ) {
             $media_id = $attachment->ID;
             $media_meta = wp_get_attachment_metadata( $media_id );
@@ -339,22 +282,29 @@ class SunAppExtension_PostsFunctions {
                 "author_name"   => get_the_author_meta( 'display_name', $author_id ),
                 "full"          => wp_get_attachment_url( $media_id, 'full' )
             );
-
-            array_push( $media_results, $media_obj);
+            array_push( $media_results, $media_obj );
         }
 
         $post_content = get_the_content( $post_id );
         $rendered_content = stripslashes( apply_filters( 'the_content', $post_content ) );
         $used_images = array();
+        /*
+         * Looks for images used in the specific post by looking at the content
+         * and matching for HTML <img> tags
+         */
         preg_match_all( "/<img .* src=(.*)\?re.* alt=.*>/", $rendered_content, $used_images );
         $used_images = array_map(
-            function ($ele) { return end( explode( "/", $ele ) ); },
+            function ( $ele ) { return end( explode( "/", $ele ) ); },
             $used_images[1]
         );
 
+        /*
+        * Builds a new array which consists of the metadata for actual images
+        * used in the post by checking
+        */
         $result = array();
-        foreach ($media_results as $media ) {
-            if (in_array( $media["name"], $used_images ) ) {
+        foreach ( $media_results as $media ) {
+            if ( in_array( $media["name"], $used_images ) ) {
                 array_push( $result, $media );
             }
         }
