@@ -39,16 +39,16 @@ class SunAppExtension_PostsFunctions {
             'excerpt'                   => $excerpt_val,
             'link'                      => $link_val,
             'author'                    => $author_val,
-            'author_dict'               => SunAppExtension_PostsFunctions::get_author_dict( $post_id ),
-            'featured_media_url_string' => SunAppExtension_PostsFunctions::get_featured_media_urls( $post_id ),
-            'featured_media_caption'    => SunAppExtension_PostsFunctions::get_featured_media_caption( $post_id ),
-            'featured_media_credit'     => SunAppExtension_PostsFunctions::get_featured_media_credits( $post_id ),
-            'category_strings'          => SunAppExtension_PostsFunctions::get_category_names( $post_id ),
-            'primary_category'          => SunAppExtension_PostsFunctions::get_primary_category( $post_id ),
-            'tag_strings'               => SunAppExtension_PostsFunctions::get_tag_names( $post_id ),
-            'post_type_enum'            => SunAppExtension_PostsFunctions::get_post_type_enum( $post_id ),
-            'post_attachments_meta'     => SunAppExtension_PostsFunctions::get_post_image_attachments( $post_id ),
-            'post_content_no_srcset'    => SunAppExtension_PostsFunctions::get_content_no_srcset( $post_id )
+            'author_dict'               => self::get_author_dict( $post_id ),
+            'featured_media_url_string' => self::get_featured_media_urls( $post_id ),
+            'featured_media_caption'    => self::get_featured_media_caption( $post_id ),
+            'featured_media_credit'     => self::get_featured_media_credits( $post_id ),
+            'category_strings'          => self::get_category_names( $post_id ),
+            'primary_category'          => self::get_primary_category( $post_id ),
+            'tag_strings'               => self::get_tag_names( $post_id ),
+            'post_type_enum'            => self::get_post_type_enum( $post_id ),
+            'post_attachments_meta'     => self::get_post_image_attachments( $post_id ),
+            'post_content_no_srcset'    => self::get_content_no_srcset( $post_id )
         );
 
     }
@@ -304,6 +304,110 @@ class SunAppExtension_PostsFunctions {
         $featured_media_id = (int)get_post_thumbnail_id( $post_id );
         $image_meta = get_post_meta( $featured_media_id );
         return $image_meta["_media_credit"][0];
+    }
+
+    /*
+     * func createArticleContentType(content: String) -> [ArticleContentType] {
+        var sections: [ArticleContentType] = []
+        guard let doc: Document = try? SwiftSoup.parse(content) else { return sections }
+        guard let elements = try? doc.getAllElements() else { return sections }
+
+        for element in elements {
+            if element.tag().toString() == "p" {
+                guard let pItem = parsePTag(element: element) else { continue }
+                sections.append(pItem)
+            } else if element.tag().toString() == "img" {
+                guard let imgItem = parseImg(element: element) else { continue }
+                sections.append(imgItem)
+            } else if element.tag().toString() == "aside" {
+                guard let blockquote = parseAside(element: element) else { continue }
+                sections.append(blockquote)
+            }
+        }
+        return sections
+    }
+
+    func parsePTag(element: Element) -> ArticleContentType? {
+        guard let text = try? element.text() else { return nil }
+        guard let html = try? element.outerHtml() else { return nil }
+        if element.hasClass("wp-media-credit") {
+            return .imageCredit(text)
+        } else if element.hasClass("wp-caption-text") {
+            return .caption(text)
+        } else {
+            return .text(html.convertHtml())
+        }
+    }
+
+    func parseImg(element: Element) -> ArticleContentType? {
+        guard let src = try? element.select("img[src]") else { return nil }
+        guard let srcUrl = try? src.attr("src").description else { return nil }
+        cacheImage(imageLink: srcUrl) //cache the image
+        return .image(srcUrl)
+    }
+
+    func parseAside(element: Element) -> ArticleContentType? {
+        guard let text = try? element.text() else { return nil}
+        if element.hasClass("module") && text != "" {
+            return .blockquote(text.htmlToString)
+        }
+        return nil
+    }*/
+
+    /**
+     * @param $post_id
+     */
+    public static function get_parsed_content_array($post_id ) {
+        // Remove if unused later
+        include_once( '../includes/simple_html_dom.php' );
+
+        $post_content = get_post_field( 'post_content', $post_id );
+        $html_content = stripslashes( apply_filters( 'the_content', $post_content ) );
+        $dom = new DOMDocument();
+        $dom->loadHTML($html_content);
+        $parsed = [];
+
+        foreach( $dom->childNodes as $node ) {
+            if ( $node->nodeType == XML_ELEMENT_NODE ) {
+                if ( $node->nodeName == 'p' ) {
+                    // treating as text
+                    array_push( $parsed, self::parse_p_tag( $node ) );
+                } elseif ( $node->nodeName == 'img' ) {
+                    // treating as inline image
+                    array_push( $parsed, self::parse_img_tag( $node ) );
+                } elseif ( $node->nodeName == 'aside' ) {
+                    // treating as blockquote
+                    array_push( $parsed, self::parse_aside_tag( $node ) );
+                }
+            }
+        }
+    }
+
+    private static function parse_p_tag( $node ) {
+        $node_content = $node->textContent;
+        $classes = $node->attributes->getNamedItem('class');
+        if ( str_pos( $classes, 'wp-media-credit' ) !== -1 ) {
+            // credit
+            return [
+                'node_type' => 'credit',
+                'node_content' => $node_content
+            ];
+        } elseif ( str_pos( $classes, 'wp-caption-text' ) !== -1 ) {
+            // caption
+            return [
+                'node_type' => 'caption',
+                'node_content' => $node_content
+            ];
+        }
+        return null;
+    }
+
+    private static function parse_img_tag( $node ) {
+        return null;
+    }
+
+    private static function parse_aside_tag( $node ) {
+        return null;
     }
 }
 
