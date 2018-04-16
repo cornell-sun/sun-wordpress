@@ -300,12 +300,11 @@ class SunAppExtension_PostsFunctions {
      * Return the string name of the photographer who took the featured image.
      * Null if credits are stored in the caption or no associated image.
      */
-    public static function get_featured_media_credits ( $post_id ) {
+    public static function get_featured_media_credits( $post_id ) {
         $featured_media_id = (int)get_post_thumbnail_id( $post_id );
         $image_meta = get_post_meta( $featured_media_id );
         return $image_meta["_media_credit"][0];
     }
-
 }
 
 ?>
