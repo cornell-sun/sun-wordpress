@@ -22,7 +22,23 @@ class SunAppExtension_PostsFunctions {
      *      ~ post_content_no_srcset - rendered content string with all srcset attributes stripped
      */
     public static function generate_post_entry( $post_id ) {
+        $post = get_post( $post_id );
+        $date_val = str_replace(" ", "T", $post->post_date );
+        $title_val = array( "rendered" => $post->post_title );
+        $rendered_content = stripslashes( apply_filters( 'the_content', $post->post_content ) );
+        $content_val = array( "rendered" => $rendered_content );
+        $excerpt_val = array( "rendered" => get_the_excerpt( $post_id ) );
+        $link_val = $post->guid;
+        $author_val = (int) $post->post_author;
+
         return array(
+            'id'                        => $post_id,
+            'date'                      => $date_val,
+            'title'                     => $title_val,
+            'content'                   => $content_val,
+            'excerpt'                   => $excerpt_val,
+            'link'                      => $link_val,
+            'author'                    => $author_val,
             'author_dict'               => self::get_author_dict( $post_id ),
             'featured_media_url_string' => self::get_featured_media_urls( $post_id ),
             'featured_media_caption'    => self::get_featured_media_caption( $post_id ),
@@ -34,6 +50,7 @@ class SunAppExtension_PostsFunctions {
             'post_attachments_meta'     => self::get_post_enum_metadata( $post_id ),
             'post_content_no_srcset'    => self::get_content_no_srcset( $post_id )
         );
+
     }
 
     /**
@@ -328,7 +345,7 @@ class SunAppExtension_PostsFunctions {
      * Return the string name of the photographer who took the featured image.
      * Null if credits are stored in the caption or no associated image.
      */
-    public static function get_featured_media_credits ( $post_id ) {
+    public static function get_featured_media_credits( $post_id ) {
         $featured_media_id = (int)get_post_thumbnail_id( $post_id );
         $image_meta = get_post_meta( $featured_media_id );
         return $image_meta["_media_credit"][0];

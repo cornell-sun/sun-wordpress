@@ -7,6 +7,20 @@
 class SunAppExtension_FeaturedEndpoint {
 
     /**
+     * Initialize and register everything necessary for the /featured endpoint to
+     * run properly.
+     */
+    public static function init() {
+        $cur_file_path = plugin_dir_path( __FILE__ );
+        include_once( $cur_file_path . "../includes/sun-backend-constants.php" );
+
+        register_rest_route( PLUGIN_ENDPOINT . '/' . PRODUCTION_VERSION, '/featured', array(
+            'methods' => 'GET',
+            'callback' => 'SunAppExtension_FeaturedEndpoint::get_featured_home_post',
+        ));
+    }
+
+    /**
      * Return the entire post object corresponding to the featured
      * post on the home page of cornellsun.com.
      */
