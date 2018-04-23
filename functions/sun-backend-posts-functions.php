@@ -24,10 +24,10 @@ class SunAppExtension_PostsFunctions {
     public static function generate_post_entry( $post_id ) {
         $post = get_post( $post_id );
         $date_val = str_replace(" ", "T", $post->post_date );
-        $title_val = array( "rendered" => $post->post_title );
+        $title_val = $post->post_title;
         $rendered_content = stripslashes( apply_filters( 'the_content', $post->post_content ) );
-        $content_val = array( "rendered" => $rendered_content );
-        $excerpt_val = array( "rendered" => get_the_excerpt( $post_id ) );
+        $content_val = $rendered_content;
+        $excerpt_val = get_the_excerpt( $post_id );
         $link_val = $post->guid;
         $author_val = (int) $post->post_author;
 
