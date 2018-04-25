@@ -212,8 +212,7 @@ class SunAppExtension_PostsFunctions {
      */
     public static function get_post_type_enum( $post_id ) {
         $category_names = self::get_category_names( $post_id );
-
-        if ( isset($category_names["Video"]) ) {
+        if ( in_array("Video", $category_names) )  {
           return "video";
         } else if ( isset($category_names["Photo Gallery"]) ) {
           return "photoGallery";
@@ -243,20 +242,32 @@ class SunAppExtension_PostsFunctions {
     * for iframe or video tags in the content and look for source of the video
     */
     public static function get_post_video_attachments ( $post_id ) {
+
       //Gets raw html content
       $post_content = self::get_content_no_srcset( $post_id );
+      //Filter out any extraneous characters
+      $post_content = preg_replace( "/( )|(')|(\\\")/", "", $post_content );
 
-      $rendered_content = stripslashes( apply_filters( 'the_content', $post_content ) );
+      return $post_content;
       $used_video = array();
 
       //Regex for getting the video URL from $post_content
-      preg_match_all ( "/<iframe.*src=(.* ).*frameborder.*><\/iframe>/", $post_content, $used_video);
+      preg_match_all ( "/<iframe.*src=.*((http|https):\/\/www.youtube.com\/embed\/[A-Za-z\d\-\_]{11}).*<\/iframe>/", $post_content, $used_video);
       $video = $used_video[1];
 
-      //Filter out any extraneous characters
-      $video = preg_replace("/( )|(')|(\\\")/", "", $video);
 
-      return $video;
+
+      // builds a media object with the url and all other fields null
+      $media_obj = array(
+        "id"              => NULL,
+        "name"            => NULL,
+        "caption"         => NULL,
+        "media_type"      => NULL,
+        "author_name"     => NULL,
+        "url"             => $video[0]
+      );
+
+      return $media_obj;
     }
 
     /**
@@ -280,7 +291,7 @@ class SunAppExtension_PostsFunctions {
                 "caption"       => $attachment->post_excerpt,
                 "media_type"    => $attachment->post_mime_type,
                 "author_name"   => get_the_author_meta( 'display_name', $author_id ),
-                "full"          => wp_get_attachment_url( $media_id, 'full' )
+                "url"           => wp_get_attachment_url( $media_id, 'full' )
             );
             array_push( $media_results, $media_obj );
         }
