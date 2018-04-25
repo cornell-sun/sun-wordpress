@@ -214,7 +214,7 @@ class SunAppExtension_PostsFunctions {
         $category_names = self::get_category_names( $post_id );
         if ( in_array("Video", $category_names) )  {
           return "video";
-        } else if ( isset($category_names["Photo Gallery"]) ) {
+        } else if ( in_array("Photo Gallery", $category_names) )  {
           return "photoGallery";
         } else {
           return "article";
@@ -248,14 +248,11 @@ class SunAppExtension_PostsFunctions {
       //Filter out any extraneous characters
       $post_content = preg_replace( "/( )|(')|(\\\")/", "", $post_content );
 
-      return $post_content;
       $used_video = array();
 
       //Regex for getting the video URL from $post_content
       preg_match_all ( "/<iframe.*src=.*((http|https):\/\/www.youtube.com\/embed\/[A-Za-z\d\-\_]{11}).*<\/iframe>/", $post_content, $used_video);
       $video = $used_video[1];
-
-
 
       // builds a media object with the url and all other fields null
       $media_obj = array(
