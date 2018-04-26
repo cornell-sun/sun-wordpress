@@ -281,7 +281,7 @@ class SunAppExtension_PostsFunctions {
         "url"             => $video[0]
       );
 
-      return $media_obj;
+      return [ $media_obj ];
     }
 
     /**
