@@ -42,6 +42,10 @@ class SunAppExtension_CommentsEndpoint {
         return "/" . $comment_id . "/comments";
     }
 
+    private static function _create_comment_request_url( $comment_id ) {
+        return "/" . $comment_id;
+    }
+
     /**
      * Return a batched response for an array of $requests using the instantiated
      * Facebook API object $fb.
@@ -76,7 +80,7 @@ class SunAppExtension_CommentsEndpoint {
             $fb = new \Facebook\Facebook([
                 'app_id' => FACEBOOK_APP_ID,
                 'app_secret' => FACEBOOK_SECRET_ID,
-                'default_graph_version' => 'v2.6',
+                'default_graph_version' => 'v2.12',
                 'default_access_token' => FACEBOOK_APP_ID . "|" . FACEBOOK_SECRET_ID, // optional
             ]);
 
@@ -101,11 +105,28 @@ class SunAppExtension_CommentsEndpoint {
             $graphNodeArr = $urlCommentsResponse->getGraphNode()->asArray();
             $ogObject = $graphNodeArr["og_object"];
             $ogObjectComments = $ogObject["comments"];
+//            return $graphNodeArr;
 
             // if no comments, no need to batch request anything
             if ( !is_array( $ogObjectComments ) || count( $ogObjectComments ) < 1 ) {
                 return [];
             }
+
+            $from_requests = [];
+            foreach( $ogObjectComments as $comment ) {
+                $comment_id = $comment["id"];
+                $comment_request = $fb->request( "GET", self::_create_comment_request_url( $comment_id ) );
+                $from_requests[ $comment_id ] = $comment_request;
+            }
+            $from_responses = self::_get_batched_response( $fb, $from_requests );
+            if ( $from_responses[0] !== 0 ) { return $from_responses[1]; }
+            $from_responses = $from_responses[1];
+            $from_responses = array_map( function ( $prof ) {
+                $prof_node = $prof->getGraphNode()->asArray();
+                if ( $prof_node === null ) { return false; }
+                return $prof_node;
+            }, $from_responses->getResponses() );
+            return $from_responses;
 
             // batch requests for all the users commenting and all the comment objects
             $profile_requests = [];
