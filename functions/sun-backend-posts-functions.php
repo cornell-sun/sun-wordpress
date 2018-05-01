@@ -48,7 +48,8 @@ class SunAppExtension_PostsFunctions {
             'tag_strings'               => self::get_tag_names( $post_id ),
             'post_type_enum'            => self::get_post_type_enum( $post_id ),
             'post_attachments_meta'     => self::get_post_enum_metadata( $post_id ),
-            'post_content_no_srcset'    => self::get_content_no_srcset( $post_id )
+            'post_content_no_srcset'    => self::get_content_no_srcset( $post_id ),
+            'suggested_article_ids'     => self::get_suggested_article_ids( $post_id )
         );
 
     }
@@ -230,11 +231,11 @@ class SunAppExtension_PostsFunctions {
     public static function get_post_type_enum( $post_id ) {
         $category_names = self::get_category_names( $post_id );
         if ( in_array("Video", $category_names) )  {
-          return "video";
+            return "video";
         } else if ( in_array("Photo Gallery", $category_names) )  {
-          return "photoGallery";
+            return "photoGallery";
         } else {
-          return "article";
+            return "article";
         }
     }
 
@@ -244,14 +245,14 @@ class SunAppExtension_PostsFunctions {
     */
     public static function get_post_enum_metadata( $post_id ) {
 
-      $type_enum = self::get_post_type_enum ( $post_id );
-      if ( strcmp( $type_enum, "photoGallery" ) == 0 ){
-        return self::get_post_image_attachments ( $post_id );
-      } elseif ( strcmp($type_enum, "video" ) == 0 ){
-        return self::get_post_video_attachments( $post_id );
-      } else {
-        return array();
-      }
+        $type_enum = self::get_post_type_enum ( $post_id );
+        if ( strcmp( $type_enum, "photoGallery" ) == 0 ){
+            return self::get_post_image_attachments ( $post_id );
+        } elseif ( strcmp($type_enum, "video" ) == 0 ){
+            return self::get_post_video_attachments( $post_id );
+        } else {
+            return [];
+        }
     }
     /**
     * Return the URLs, captions, and other necessary metadata for all the video
@@ -259,29 +260,32 @@ class SunAppExtension_PostsFunctions {
     * for iframe or video tags in the content and look for source of the video
     */
     public static function get_post_video_attachments ( $post_id ) {
+        //Gets raw html content
+        $post_content = self::get_content_no_srcset( $post_id );
 
-      //Gets raw html content
-      $post_content = self::get_content_no_srcset( $post_id );
-      //Filter out any extraneous characters
-      $post_content = preg_replace( "/( )|(')|(\\\")/", "", $post_content );
+        //Filter out any extraneous characters
+        $post_content = preg_replace( "/( )|(')|(\\\")/", "", $post_content );
 
-      $used_video = array();
+        $used_video = array();
 
-      //Regex for getting the video URL from $post_content
-      preg_match_all ( "/<iframe.*src=.*((http|https):\/\/www.youtube.com\/embed\/[A-Za-z\d\-\_]{11}).*<\/iframe>/", $post_content, $used_video);
-      $video = $used_video[1];
+        //Regex for getting the video URL from $post_content
+        preg_match_all(
+            "/<iframe.*src=.*((http|https):\/\/www.youtube.com\/embed\/[A-Za-z\d\-\_]{11}).*<\/iframe>/",
+            $post_content,
+            $used_video
+        );
+        $video = $used_video[1];
 
-      // builds a media object with the url and all other fields null
-      $media_obj = array(
-        "id"              => NULL,
-        "name"            => NULL,
-        "caption"         => NULL,
-        "media_type"      => NULL,
-        "author_name"     => NULL,
-        "url"             => $video[0]
-      );
-
-      return [ $media_obj ];
+        // builds a media object with the url and all other fields null
+        $media_obj = array(
+            "id"            => NULL,
+            "name"          => NULL,
+            "caption"       => NULL,
+            "media_type"    => NULL,
+            "author_name"   => NULL,
+            "url"           => $video[0]
+        );
+        return [ $media_obj ];
     }
 
     /**
@@ -338,7 +342,7 @@ class SunAppExtension_PostsFunctions {
     }
 
     /**
-     * Remove all occurences of the attribute srcset from all images in the
+     * Remove all occurrences of the attribute srcset from all images in the
      * given post with id $post_id.
      */
     public static function get_content_no_srcset( $post_id ) {
@@ -357,6 +361,27 @@ class SunAppExtension_PostsFunctions {
         $featured_media_id = (int)get_post_thumbnail_id( $post_id );
         $image_meta = get_post_meta( $featured_media_id );
         return $image_meta["_media_credit"][0];
+    }
+
+    /**
+     * Returns two mini post dictionaries that are suggested reads given a post with id $post_id.
+     * The returned dictionaries contain the posts's unique ID, its title, its author dictionary,
+     * and its featured media dictionary.
+     */
+    public static function get_suggested_article_ids( $post_id ) {
+        // Docs: http://largo.readthedocs.io/api/inc/related-content.html?highlight=largo_related
+        $related_arts = new Largo_Related( NUM_RELATED_ARTICLES, $post_id );
+
+        // turn related post ids into desired dictionaries
+        return array_map( function ( $post_id ) {
+            $post = get_post( $post_id );
+            return [
+                "post_id"           => $post_id,
+                "title"             => $post->post_title,
+                "author_dict"       => self::get_author_dict( $post_id ),
+                "featured_media"    => self::get_featured_media_urls( $post_id )
+            ];
+        }, $related_arts->ids() );
     }
 }
 
