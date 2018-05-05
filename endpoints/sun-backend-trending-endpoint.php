@@ -73,7 +73,7 @@ class SunAppExtension_TrendingEndpoint {
             $cur_max = 0;
             foreach( $popular_tags as $tag => $count ) {
                 if ( $count > $cur_max ) {
-                    $cur_most_popular = $tag;
+                    $cur_most_popular = strtolower( $tag );
                     $cur_max = $count;
                 }
             }
