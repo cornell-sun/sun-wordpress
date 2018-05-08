@@ -373,7 +373,7 @@ class SunAppExtension_PostsFunctions {
         $related_arts = new Largo_Related( NUM_RELATED_ARTICLES, $post_id );
 
         // turn related post ids into desired dictionaries
-        return array_map( function ( $post_id ) {
+        $articles = array_map( function ( $post_id ) {
             $post = get_post( $post_id );
             return [
                 "post_id"           => $post_id,
@@ -382,6 +382,10 @@ class SunAppExtension_PostsFunctions {
                 "featured_media"    => self::get_featured_media_urls( $post_id )
             ];
         }, $related_arts->ids() );
+
+        return array_filter( $articles, function ( $article ) {
+            return is_numeric( $article["post_id"] );
+        });
     }
 }
 
