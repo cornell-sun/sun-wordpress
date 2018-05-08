@@ -369,7 +369,7 @@ class SunAppExtension_PostsFunctions {
      * and its featured media dictionary.
      */
     public static function get_suggested_article_ids( $post_id ) {
-        // Docs: http://largo.readthedocs.io/api/inc/related-content.html?highlight=largo_related
+        // Docs: http://largo.re    adthedocs.io/api/inc/related-content.html?highlight=largo_related
         $related_arts = new Largo_Related( NUM_RELATED_ARTICLES, $post_id );
 
         // turn related post ids into desired dictionaries
@@ -383,9 +383,11 @@ class SunAppExtension_PostsFunctions {
             ];
         }, $related_arts->ids() );
 
-        return array_filter( $articles, function ( $article ) {
-            return is_numeric( $article["post_id"] );
-        });
+        return array_values(
+            array_filter( $articles, function ( $article ) {
+                return is_numeric( $article["post_id"] );
+            })
+        );
     }
 }
 
