@@ -62,15 +62,14 @@ class SunAppExtension_PostsFunctions {
     public static function get_author_dict( $post_id ) {
         $post = get_post( $post_id );
         $post_meta = get_post_meta( $post_id );
-        $author_names = $post_meta["largo_byline_text"];
+        $author_names = explode( ", ", $post_meta[ "largo_byline_text" ][ 0 ] );
 
-        if ( empty( $author_names ) ) {
+        if ( $author_names[0] === "" ) {
             // no byline author text, default to normal author
             $author_id = (int)$post->post_author;
             $user_obj = get_user_by( "id", $author_id );
 //            $user_meta = get_user_meta( $author_id );
             $user = $user_obj->display_name;
-
 //            $user = array(
 //                "id"            => $author_id,
 //                "name"          => $user_obj->display_name,
@@ -213,10 +212,8 @@ class SunAppExtension_PostsFunctions {
      */
     public static function get_tag_names( $post_id ) {
         $tags = get_the_tags( $post_id );
-
         // no tags for associated post
         if ( !$tags ) { return array(); }
-
         return array_map(
             function ( $tag ) { return $tag->name; },
             $tags
