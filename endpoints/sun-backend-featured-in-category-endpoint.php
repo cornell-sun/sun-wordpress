@@ -1,4 +1,9 @@
 <?php
+
+/**
+ * Class SunAppExtension_FeaturedInCategoryEndpoint
+ * Handles the /featured_in_category endpoint which returns the featured post within a given category
+ */
   class SunAppExtension_FeaturedInCategoryEndpoint {
 
     /**
