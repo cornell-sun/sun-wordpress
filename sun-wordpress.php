@@ -52,7 +52,7 @@ if ( !class_exists( 'SunAppExtension_Plugin' ) ) {
             ));
         }
     }
-        
+
     SunAppExtension_Plugin::init();
 }
 
