@@ -1,7 +1,10 @@
 <?php
 /**
- * Handles the /featured endpoint, which returns the featured post prominently posted
+ * Takes care of all featured post endpoints.
+ * The default /featured endpoint returns the featured post prominently posted
  * on the first home page using the largo plugin.
+ *
+ * The /featured/{category} endpoint returns the most popular post within a category using the largo plugin
  */
 class SunAppExtension_FeaturedEndpoint {
 
@@ -13,7 +16,7 @@ class SunAppExtension_FeaturedEndpoint {
         $cur_file_path = plugin_dir_path( __FILE__ );
         include_once( $cur_file_path . "../includes/sun-backend-constants.php" );
 
-        register_rest_route( PLUGIN_ENDPOINT . '/' . PRODUCTION_VERSION, '/featured/(?P<category>[A-Za-z ]+)', array(
+        register_rest_route( PLUGIN_ENDPOINT . '/' . PRODUCTION_VERSION, '/featured/(?P<category>[A-Za-z]+)', array(
             'methods' => 'GET', 
             'callback' => 'SunAppExtension_FeaturedEndpoint::get_featured_in_category'
         ));
