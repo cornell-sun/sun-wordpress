@@ -1,7 +1,7 @@
 <?php
 /**
- * Handles the /featured endpoint, which returns the featured post prominently posted
- * on the first home page using the largo plugin.
+ * Handles the /urltoid endpoint, which returns the integer ID associated with
+ * the post URL passed in the `url` parameter.
  */
 
 class SunAppExtension_UrlToIdEndpoint {
