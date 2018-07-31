@@ -120,25 +120,29 @@ class SunAppExtension_TrendingEndpoint {
      * 10 articles being read in the last few days.
      */
     public static function get_trending_tags() {
-        $cur_file_path = plugin_dir_path( __FILE__ );
-        include_once( $cur_file_path . "../includes/sun-backend-constants.php" );
+        try {
+            $cur_file_path = plugin_dir_path( __FILE__ );
+            include_once( $cur_file_path . "../includes/sun-backend-constants.php" );
 
-        $data = self::_get_jetpack_post_data();
+            $data = self::_get_jetpack_post_data();
 
-        // unsuccessful request, no trending results
-        if ( !is_array( $data ) ) return [ "no trending tags" ];
+            // unsuccessful request, no trending results
+            if ( !is_array( $data ) ) return [ "no trending tags" ];
 
-        // convert array of objects into 2d of day popular posts array
-        $posts_by_day = array_map( function ($ele) {
-            return $ele->postviews;
-        }, $data );
+            // convert array of objects into 2d of day popular posts array
+            $posts_by_day = array_map( function ($ele) {
+                return $ele->postviews;
+            }, $data );
 
-        $popular_posts = self::_array_flatten( $posts_by_day );
-        $popular_tags = self::_posts_to_tags( $popular_posts );
-        $tag_counts = self::_bucket_count( $popular_tags );
-        $top_tags = self::_get_top_n_tags( NUM_TRENDING_TAGS, $tag_counts );
-
-        return $top_tags;
+            $popular_posts = self::_array_flatten( $posts_by_day );
+            $popular_tags = self::_posts_to_tags( $popular_posts );
+            $tag_counts = self::_bucket_count( $popular_tags );
+            $top_tags = self::_get_top_n_tags( NUM_TRENDING_TAGS, $tag_counts );
+            return $top_tags;
+        } catch ( Exception $e ) {
+            error_log( "Exception in trending tags: " . $e->getMessage() + "\n");
+            return [ "trending tags not available" ];
+        }
     }
 }
 
