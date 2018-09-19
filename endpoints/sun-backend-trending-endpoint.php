@@ -60,10 +60,10 @@ class SunAppExtension_TrendingEndpoint {
      * value from $keys and each value is the number of occurrences
      * of the key in $keys.
      */
-    private static function _bucket_count( $keys ) {
+    private static function _bucket_count( $keys ) { 
         $buckets = [];
         foreach( $keys as $key ) {
-            $trimmed_key = trim( $key );
+            $trimmed_key = strtolower( trim( $key ) );
             if ( array_key_exists( $trimmed_key, $buckets ) ) {
                 $buckets[$trimmed_key] += 1;
             } else {
@@ -78,14 +78,9 @@ class SunAppExtension_TrendingEndpoint {
      * a list of tags associated with the posts, then flattened.
      */
     private static function _posts_to_tags( $posts ) {
-        $popular_post_ids = array_map( function ($post) {
-            return $post->post_id;
-        }, $posts);
-
-        $popular_post_tags = array_map( function ($post_id) {
-            return wp_get_post_tags( $post_id, array( 'fields' => 'names' ) );
-        }, $popular_post_ids);
-
+        $popular_post_tags = array_map( function ( $post ) {
+            return wp_get_post_tags( $post->post_id, array( 'fields' => 'names' ) );
+        }, $posts );
         return self::_array_flatten( $popular_post_tags );
     }
 
@@ -96,23 +91,8 @@ class SunAppExtension_TrendingEndpoint {
         if ( count( $tags ) <= $n ) {
             return array_keys( $tags );
         }
-
-        $top = [];
-        while ( count( $top ) < $n ) {
-            $cur_most_popular = null;
-            $cur_max = 0;
-            foreach( $tags as $tag => $count ) {
-                if ( $count > $cur_max && !in_array( $tag, $top ) ) {
-                    $cur_most_popular = strtolower( $tag );
-                    $cur_max = $count;
-                }
-            }
-
-            array_push( $top, $cur_most_popular );
-            unset( $tags[ $cur_most_popular ] );
-        }
-
-        return $top;
+        arsort($tags);
+        return array_slice( array_keys( $tags ), 0, $n );
     }
 
     /**
@@ -125,7 +105,7 @@ class SunAppExtension_TrendingEndpoint {
             include_once( $cur_file_path . "../includes/sun-backend-constants.php" );
 
             $data = self::_get_jetpack_post_data();
-
+            
             // unsuccessful request, no trending results
             if ( !is_array( $data ) ) return [ "no trending tags" ];
 
@@ -133,7 +113,7 @@ class SunAppExtension_TrendingEndpoint {
             $posts_by_day = array_map( function ($ele) {
                 return $ele->postviews;
             }, $data );
-
+    
             $popular_posts = self::_array_flatten( $posts_by_day );
             $popular_tags = self::_posts_to_tags( $popular_posts );
             $tag_counts = self::_bucket_count( $popular_tags );

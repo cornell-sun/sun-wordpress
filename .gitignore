@@ -1,3 +1,4 @@
 .idea/*
 .vscode/*
 includes/sun-backend-config.php
+request_tests.http
