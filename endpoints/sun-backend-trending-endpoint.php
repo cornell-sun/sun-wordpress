@@ -26,7 +26,7 @@ class SunAppExtension_TrendingEndpoint {
      */
     private static function _get_jetpack_post_data() {
         $cur_file_path = plugin_dir_path( __FILE__ );
-        include_once( $cur_file_path . "../includes/sun-backend-constants.php" );
+        include_once( $cur_file_path . "../includes/sun-backend-config.php" );
 
         // request 15 most recent popular posts for 2 days
         $request_url = add_query_arg( array(
