@@ -2,3 +2,6 @@
 .vscode/*
 includes/sun-backend-config.php
 request_tests.http
+vendor/*
+composer.json
+composer.phar
