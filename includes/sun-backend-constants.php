@@ -2,7 +2,6 @@
 /**
  * Contains all the constants used throughout the application in one place.
  */
-
 define('NUM_TRENDING_TAGS', 7);
 define('NUM_RELATED_ARTICLES', 2);
 
