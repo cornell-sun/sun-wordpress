@@ -132,7 +132,6 @@ function notifications_meta_save( $post_id )
     }
 
     write_log('SCRIPT DID NOT EXIT, NOW PROPERLY SAVING');
-    die(print_r(isset($_POST['checkbox-breaking-news'])));
     //Breaking news
     if (isset($_POST['checkbox-breaking-news'])) {
         update_post_meta($post_id, 'checkbox-breaking-news', 'yes');
@@ -227,7 +226,6 @@ function onesignal_notification_send( $new_status, $old_status, $post )
         $body->headings = array('en' => create_included_segments( $post ));
         $body->contents = array('en' => 'test');
         $body->included_segments = array('TEST_SEGMENT');
-        $body->data = create_included_segments( $post );
         //$body->included_segments = array('Sports');
         $bodyAsJson = json_encode($body);
 
