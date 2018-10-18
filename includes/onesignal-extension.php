@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @package Onesignal-Extension
  * @version 1.0
@@ -7,7 +6,7 @@
 /*
 Plugin Name: iOS Notifications
 Description: Allows the ability to send notifications to the Cornell Sun iOS app.
-Author: Austin Astorga
+Author: Austin Astorga and Mike Fang
 Version: 1.0
  */
 
@@ -213,13 +212,14 @@ function create_included_segments($post)
 }
 
 function onesignal_notification_send($new_status, $old_status, $post)
-{
+{  
+ setup_postdata( $post );
  write_log('GOING TO SEND NOTIFICATION!');
  if ('publish' === $new_status && 'publish' !== $old_status && $post->post_type === 'post') {
   $body                    = new stdClass();
   $body->app_id            = "c7e28bf2-698c-4a07-b56c-f2077e43c1b4";
   $body->headings          = array('en' => get_the_title($post));
-  $body->contents          = array('en' => 'test');
+  $body->contents          = array('en' => get_the_excerpt());
   $body->included_segments = create_included_segments($post);
   $bodyAsJson              = json_encode($body);
 
