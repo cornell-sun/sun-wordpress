@@ -207,10 +207,11 @@ function create_included_segments( $post )
     $segments = [];
 
     foreach ($stored_meta as $category => $value) {
-        foreach ($value as $k => $v) {
-            array_push($segments, $v);
-        }
+        // foreach ($value as $k => $v) {
+        //     array_push($segments, $v);
+        // }
         $stripped_category = str_replace('checkbox-', '', $category);
+        array_push($segments, $v);
     }
 
     return implode(" ", $segments);
