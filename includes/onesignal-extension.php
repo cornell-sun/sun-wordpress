@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @package Onesignal-Extension
  * @version 1.0
@@ -7,7 +6,7 @@
 /*
 Plugin Name: iOS Notifications
 Description: Allows the ability to send notifications to the Cornell Sun iOS app.
-Author: Austin Astorga
+Author: Austin Astorga and Mike Fang
 Version: 1.0
  */
 
@@ -20,12 +19,11 @@ function notifications_meta_callback($post)
  wp_nonce_field(basename(__FILE__), 'notifications_nonce');
  $notifications_stored_meta = get_post_meta($post->ID);
  ?>
-
     <p>
-    <label for="onesignal-post-class">
-        <?php _e("Send notifications to the Cornell Sun iOS app.", 'example'); ?>
-    </label>
-    <br />
+        <label for="onesignal-post-class">
+            <?php _e("Send notifications to the Cornell Sun iOS app.", 'example'); ?>
+        </label>
+        <br />
     </p>
 
     <p>
@@ -53,43 +51,43 @@ function notifications_meta_callback($post)
     </p>
 
     <p>
-    <label for="checkbox-sports">
-    <input type="checkbox" name="checkbox-sports" id="checkbox-sports"
-            value="<?php echo esc_attr(get_post_meta($post->ID, 'checkbox-sports', true)); ?>" />
-        <?php _e('Sports', 'notification-textdomain') ?>
-    </label>
+        <label for="checkbox-sports">
+            <input type="checkbox" name="checkbox-sports" id="checkbox-sports"
+                value="<?php echo esc_attr(get_post_meta($post->ID, 'checkbox-sports', true)); ?>" />
+            <?php _e('Sports', 'notification-textdomain') ?>
+        </label>
     </p>
 
     <p>
-    <label for="checkbox-sunspots">
-    <input type="checkbox" name="checkbox-sunspots" id="checkbox-sunspots"
-        value="<?php echo esc_attr(get_post_meta($post->ID, 'checkbox-sunspots', true)); ?>" />
-        <?php _e('Sunspots', 'notification-textdomain') ?>
-    </label>
+        <label for="checkbox-sunspots">
+            <input type="checkbox" name="checkbox-sunspots" id="checkbox-sunspots"
+            value="<?php echo esc_attr(get_post_meta($post->ID, 'checkbox-sunspots', true)); ?>" />
+            <?php _e('Sunspots', 'notification-textdomain') ?>
+        </label>
     </p>
 
     <p>
-    <label for="checkbox-multimedia">
-    <input type="checkbox" name="checkbox-multimedia" id="checkbox-multimedia"
-        value="<?php echo esc_attr(get_post_meta($post->ID, 'checkbox-multimedia', true)); ?>"  />
-        <?php _e('Multimedia', 'notification-textdomain') ?>
-    </label>
+        <label for="checkbox-multimedia">
+            <input type="checkbox" name="checkbox-multimedia" id="checkbox-multimedia"
+            value="<?php echo esc_attr(get_post_meta($post->ID, 'checkbox-multimedia', true)); ?>"  />
+            <?php _e('Multimedia', 'notification-textdomain') ?>
+        </label>
     </p>
 
     <p>
-    <label for="checkbox-arts-entertainment">
-    <input type="checkbox" name="checkbox-arts-entertainment" id="checkbox-arts-entertainment"
-        value="<?php echo esc_attr(get_post_meta($post->ID, 'checkbox-arts-entertainment', true)); ?>" />
-        <?php _e('Arts and Entertainment', 'notification-textdomain') ?>
-    </label>
+        <label for="checkbox-arts-entertainment">
+            <input type="checkbox" name="checkbox-arts-entertainment" id="checkbox-arts-entertainment"
+            value="<?php echo esc_attr(get_post_meta($post->ID, 'checkbox-arts-entertainment', true)); ?>" />
+            <?php _e('Arts and Entertainment', 'notification-textdomain') ?>
+        </label>
     </p>
 
     <p>
-    <label for="checkbox-science">
-    <input type="checkbox" name="checkbox-science" id="checkbox-science"
-        value="<?php echo esc_attr(get_post_meta($post->ID, 'checkbox-science', true)); ?>" />
-        <?php _e('Science', 'notification-textdomain') ?>
-    </label>
+        <label for="checkbox-science">
+            <input type="checkbox" name="checkbox-science" id="checkbox-science"
+            value="<?php echo esc_attr(get_post_meta($post->ID, 'checkbox-science', true)); ?>" />
+            <?php _e('Science', 'notification-textdomain') ?>
+        </label>
     </p>
 
     <p>
@@ -101,7 +99,6 @@ function notifications_meta_callback($post)
     </p>
 
   <?php
-
 }
 
 function notifications_custom_meta()
@@ -215,17 +212,16 @@ function create_included_segments($post)
 }
 
 function onesignal_notification_send($new_status, $old_status, $post)
-{
+{  
+ setup_postdata( $post );
  write_log('GOING TO SEND NOTIFICATION!');
  if ('publish' === $new_status && 'publish' !== $old_status && $post->post_type === 'post') {
-  $body         = new stdClass();
-  $body->app_id = "c7e28bf2-698c-4a07-b56c-f2077e43c1b4";
-  //$body->headings = array('en' => get_the_title($post));
+  $body                    = new stdClass();
+  $body->app_id            = "c7e28bf2-698c-4a07-b56c-f2077e43c1b4";
   $body->headings          = array('en' => get_the_title($post));
-  $body->contents          = array('en' => 'test');
+  $body->contents          = array('en' => get_the_excerpt());
   $body->included_segments = create_included_segments($post);
-  //$body->included_segments = array('Sports');
-  $bodyAsJson = json_encode($body);
+  $bodyAsJson              = json_encode($body);
 
   $response = wp_remote_post("https://onesignal.com/api/v1/notifications", array(
    'method'      => 'POST',
