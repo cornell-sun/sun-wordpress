@@ -212,8 +212,8 @@ function create_included_segments($post)
 }
 
 function onesignal_notification_send($new_status, $old_status, $post)
-{  
- setup_postdata( $post );
+{
+ setup_postdata($post);
  write_log('GOING TO SEND NOTIFICATION!');
  if ('publish' === $new_status && 'publish' !== $old_status && $post->post_type === 'post') {
   $body                    = new stdClass();
@@ -221,6 +221,7 @@ function onesignal_notification_send($new_status, $old_status, $post)
   $body->headings          = array('en' => get_the_title($post));
   $body->contents          = array('en' => get_the_excerpt());
   $body->included_segments = create_included_segments($post);
+  $body->data              = array('id' => strval($post->ID));
   $bodyAsJson              = json_encode($body);
 
   $response = wp_remote_post("https://onesignal.com/api/v1/notifications", array(
