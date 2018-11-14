@@ -1,5 +1,5 @@
 <style>
-<?php include 'css/style.css';?>
+<?php include ('css/style.css');?>
 </style>
 <?php
 
@@ -48,6 +48,7 @@ function notifications_meta_post($new_status, $old_status, $post) {
 
         update_post_meta($post_id, 'custom-title', $_POST['custom-title']);
         update_post_meta($post_id, 'custom-blurb', $_POST['custom-blurb']);
+        update_post_meta($post_id, 'send-time', $_POST['send-time']);
 
         //Breaking news
         if (isset($_POST['checkbox-breaking-news'])) {
@@ -111,6 +112,12 @@ function notifications_meta_post($new_status, $old_status, $post) {
         } else {
             update_post_meta($post_id, 'checkbox-dining', 'no');
         }
+
+        if (isset($_POST['checkbox-send-option'])) {
+            update_post_meta($post_id, 'checkbox-send-option', 'yes');
+        } else {
+            update_post_meta($post_id, 'checkbox-send-option', 'no');
+        }
     }
 }
 
@@ -149,15 +156,44 @@ function get_title($post) {
     return $meta['custom-title'][0];
 }
 
+function get_delivery_time_of_day($post) {
+    $meta = get_post_meta($post->ID);
+    if ($meta['send-time'][0] === '') {
+        return '';
+    }
+    $time = explode(":", $meta['send-time'][0]);
+    $hours = (int)$time[0];
+    $suffix = "AM";
+    if ($hours > 12) {
+        $hours = $hours - 12;
+        $suffix = "PM";
+    }
+    $new_time = strval($hours) . ":" . $time[1] . $suffix;
+    return $new_time;
+}
+
+function get_send_option($post) {
+    $meta = get_post_meta($post->ID);
+    if ($meta['checkbox-send-option'][0] === 'no') {
+        if ($meta['send-time'][0] !== '') {
+            return 'timezone';
+        }
+        return 'last-active';
+    }
+    return ''; 
+}
+
 function onesignal_notification_send($new_status, $old_status, $post) {
     write_log('GOING TO SEND NOTIFICATION!');
     if ('publish' === $new_status && 'publish' !== $old_status && $post->post_type === 'post') {
         $body = new stdClass();
-        $body->app_id = "c7e28bf2-698c-4a07-b56c-f2077e43c1b4";
+        $body->app_id = 'c7e28bf2-698c-4a07-b56c-f2077e43c1b4';
         $body->headings = array('en' => get_title($post));
         $body->contents = array('en' => get_blurb($post));
-        $body->included_segments = array("TEST_SEGMENT"); //get_included_segments($post);
+        $body->included_segments = array('TEST_SEGMENT'); //get_included_segments($post);
         $body->data = array('id' => strval($post->ID));
+        $body->delayed_option = get_send_option($post);
+        $body->delivery_time_of_day = get_delivery_time_of_day($post);
         $bodyAsJson = json_encode($body);
 
         $response = wp_remote_post(
