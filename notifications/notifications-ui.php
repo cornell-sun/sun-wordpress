@@ -1,4 +1,4 @@
-<p>Send notifications to the Cornell Sun iOS app.</p>
+<p>Send intelligent notifications to the Cornell Sun iOS app.</p>
 <div class="custom_info_wrapper">
     <div class="custom_info_item">
         <label for="custom-title">

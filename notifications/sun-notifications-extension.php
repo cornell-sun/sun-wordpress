@@ -32,7 +32,6 @@ add_action('add_meta_boxes', 'notifications_custom_meta');
  * Saves the notification meta input
  */
 function notifications_meta_post($new_status, $old_status, $post) {
-    write_log('SAVING THE DATA');
     $post_id = ($post->ID);
     if ('publish' === $new_status && 'publish' !== $old_status && $post->post_type === 'post') {
         // Checks save status
@@ -113,6 +112,7 @@ function notifications_meta_post($new_status, $old_status, $post) {
             update_post_meta($post_id, 'checkbox-dining', 'no');
         }
 
+        //Send option
         if (isset($_POST['checkbox-send-option'])) {
             update_post_meta($post_id, 'checkbox-send-option', 'yes');
         } else {
@@ -143,7 +143,17 @@ function get_blurb($post) {
     setup_postdata($post);
     $meta = get_post_meta($post->ID);
     if ($meta['custom-blurb'][0] === '') {
-        return get_the_excerpt();
+        $excerpt = get_the_excerpt();
+        $excerpt = trim(
+            preg_replace('/ +/', ' ',
+                urldecode(
+                    html_entity_decode(
+                        strip_tags($excerpt)
+                    )
+                )
+            )
+        );
+        return $excerpt;
     }
     return $meta['custom-blurb'][0];
 }
@@ -162,7 +172,7 @@ function get_delivery_time_of_day($post) {
         return '';
     }
     $time = explode(":", $meta['send-time'][0]);
-    $hours = (int)$time[0];
+    $hours = (int) $time[0];
     $suffix = "AM";
     if ($hours > 12) {
         $hours = $hours - 12;
@@ -180,7 +190,7 @@ function get_send_option($post) {
         }
         return 'last-active';
     }
-    return ''; 
+    return '';
 }
 
 function onesignal_notification_send($new_status, $old_status, $post) {
