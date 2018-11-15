@@ -26,7 +26,7 @@ class SunAppExtension_TrendingEndpoint {
      * Makes a GET request and returns the JETPACK data associated with the website
      * that keeps track of all data on post readership and popularity.
      */
-    private static function __get_jetpack_post_data() {
+    private static function _get_jetpack_post_data() {
         $cur_file_path = plugin_dir_path(__FILE__);
         include_once $cur_file_path . "../includes/sun-backend-config.php";
 
@@ -49,7 +49,7 @@ class SunAppExtension_TrendingEndpoint {
      * Takes in a 2D array of arrays and flattens it into a single array,
      * retaining all elements in the original arrays.
      */
-    private static function __array_flatten($arrs) {
+    private static function _array_flatten($arrs) {
         $flat = [];
         foreach ($arrs as $arr) {
             foreach ($arr as $ele) {
@@ -64,7 +64,7 @@ class SunAppExtension_TrendingEndpoint {
      * value from $keys and each value is the number of occurrences
      * of the key in $keys.
      */
-    private static function __bucket_count($keys) {
+    private static function _bucket_count($keys) {
         $buckets = [];
         foreach ($keys as $key) {
             $trimmed_key = strtolower(trim($key));
@@ -81,7 +81,7 @@ class SunAppExtension_TrendingEndpoint {
      * Convert a list of post objects with post_id fields to
      * a list of tags associated with the posts, then flattened.
      */
-    private static function __posts_to_tags($posts) {
+    private static function _posts_to_tags($posts) {
         $popular_post_tags = array_map(
             function ($post) {
                 return wp_get_post_tags($post->post_id, array('fields' => 'names'));
@@ -93,7 +93,7 @@ class SunAppExtension_TrendingEndpoint {
     /**
      * Return the top $n keys in $tags based on their values
      */
-    private static function __get_top_n_tags($n, $tags) {
+    private static function _get_top_n_tags($n, $tags) {
         if (count($tags) <= $n) {
             return array_keys($tags);
         }

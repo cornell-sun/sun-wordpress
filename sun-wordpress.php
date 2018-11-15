@@ -1,7 +1,7 @@
 <?php
 /** Error reporting: Uncomment this to debug */
-error_reporting(E_ALL);
-ini_set('display_errors', 'on');
+// error_reporting(E_ALL);
+// ini_set('display_errors', 'on');
 /**
  * @package Sun-Wordpress
  * @version 1.0
