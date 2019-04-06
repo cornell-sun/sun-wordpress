@@ -202,7 +202,7 @@ function onesignal_notification_send($new_status, $old_status, $post) {
         $body->app_id = 'c7e28bf2-698c-4a07-b56c-f2077e43c1b4';
         $body->headings = array('en' => get_title($post));
         $body->contents = array('en' => get_blurb($post));
-        $body->included_segments = array('TEST_SEGMENT');// get_included_segments($post)); //array('TEST_SEGMENT');
+        $body->included_segments = get_included_segments($post);
         $body->data = array('id' => strval($post->ID));
         $body->delayed_option = get_send_option($post);
         $body->delivery_time_of_day = get_delivery_time_of_day($post);
