@@ -6,11 +6,13 @@
  * Version: 1.0
  */
 
+
 function add_notification_style () {
-    wp_register_style( 'prefix-style', plugins_url('../css/style.css', __FILE__) );
-    wp_enqueue_style( 'prefix-style' );
+    wp_register_style( 'sun-notification-style', plugins_url( 'style.css', __FILE__ ) );
+    wp_enqueue_style( 'sun-notification-style' );
 }
-add_action( 'wp_enqueue_style', 'add_notification_style');
+add_action( 'admin_enqueue_scripts', 'add_notification_style');
+
 /**
  * Outputs the content of the meta box
  */
@@ -195,13 +197,12 @@ function get_send_option($post) {
 }
 
 function onesignal_notification_send($new_status, $old_status, $post) {
-    write_log('GOING TO SEND NOTIFICATION!');
     if ('publish' === $new_status && 'publish' !== $old_status && $post->post_type === 'post') {
         $body = new stdClass();
         $body->app_id = 'c7e28bf2-698c-4a07-b56c-f2077e43c1b4';
         $body->headings = array('en' => get_title($post));
         $body->contents = array('en' => get_blurb($post));
-        $body->included_segments = array('en' => get_included_segments($post)); //array('TEST_SEGMENT'); //;
+        $body->included_segments = array('TEST_SEGMENT');// get_included_segments($post)); //array('TEST_SEGMENT');
         $body->data = array('id' => strval($post->ID));
         $body->delayed_option = get_send_option($post);
         $body->delivery_time_of_day = get_delivery_time_of_day($post);

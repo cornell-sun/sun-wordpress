@@ -4,3 +4,5 @@ includes/sun-backend-config.php
 request_tests.http
 vendor/*
 composer.phar
+*.http
+*.zip
