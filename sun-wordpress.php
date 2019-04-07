@@ -1,4 +1,7 @@
 <?php
+/** Error reporting: Uncomment this to debug */
+// error_reporting(E_ALL);
+// ini_set('display_errors', 'on');
 /**
  * @package Sun-Wordpress
  * @version 1.0
@@ -7,7 +10,7 @@
 Plugin Name: Sun Backend Extension
 Plugin URI: https://github.com/cornell-sun/sun-wordpress
 Description: The Sun Backend Extension adds extra functionality to the traditional Wordpress backend so it is easier and faster to use with the new Cornell Daily Sun iOS app.
-Author: Cornell Sun App Team (Managed by Chris Sciavolino)
+Author: Cornell Sun App Team (Managed by Chris Sciavolino and Mike Fang)
 Version: 1.0
 Author URI: http://cdsciavolino.github.io
  */
@@ -30,7 +33,7 @@ if (!class_exists('SunAppExtension_Plugin')) {
             include_once 'endpoints/sun-backend-trending-endpoint.php';
             include_once 'endpoints/sun-backend-comments-endpoint.php';
             include_once 'endpoints/sun-backend-url-to-id-endpoint.php';
-            include_once 'includes/onesignal-extension.php';
+            include_once 'notifications/sun-notifications-extension.php';
             include_once 'includes/sun-backend-constants.php';
 
             // add post_info_dict to each of the posts requested
