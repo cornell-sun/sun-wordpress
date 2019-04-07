@@ -6,19 +6,11 @@
  * Version: 1.0
  */
 
-
-function add_notification_style () {
-    wp_register_style( 'sun-notification-style', plugins_url( 'style.css', __FILE__ ) );
-    wp_enqueue_style( 'sun-notification-style' );
-}
-add_action( 'admin_enqueue_scripts', 'add_notification_style');
-
 /**
  * Outputs the content of the meta box
  */
 function notifications_meta_callback($post) {
-    wp_nonce_field(basename(__FILE__), 'notifications_nonce');
-    $notifications_stored_meta = get_post_meta($post->ID);
+    wp_nonce_field( basename( __FILE__ ), 'notifications_nonce' );
     include 'notifications-ui.php';
 }
 
