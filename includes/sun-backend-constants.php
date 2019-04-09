@@ -7,6 +7,6 @@ define('NUM_RELATED_ARTICLES', 2);
 
 define('PLUGIN_ENDPOINT', 'sun-backend-extension');
 define('PRODUCTION_VERSION', 'v1');
-define('BETA_VERSION', 'v2');  
-
+define('BETA_VERSION', 'v2');
+define('ONESIGNAL_API', 'YTdjMjRkYmUtNjhiZC00OThmLWFmMTQtOTE5MjZkN2M1MWNi');
 ?>

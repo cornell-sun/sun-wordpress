@@ -209,7 +209,7 @@ function onesignal_notification_send($new_status, $old_status, $post) {
                 'blocking' => true,
                 'headers' => array(
                     "Content-type" => "application/json; charset=utf-8",
-                    "Authorization" => "Basic ZWFkMGYzYjMtNTY1ZS00YzQ2LThlNjktMzg1YzcyODA3ZGFh",
+                    "Authorization" => "Basic " . ONESIGNAL_API,
                 ),
                 'body' => $bodyAsJson,
             )
