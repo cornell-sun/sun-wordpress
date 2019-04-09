@@ -6,19 +6,11 @@
  * Version: 1.0
  */
 
-
-function add_notification_style () {
-    wp_register_style( 'sun-notification-style', plugins_url( 'style.css', __FILE__ ) );
-    wp_enqueue_style( 'sun-notification-style' );
-}
-add_action( 'admin_enqueue_scripts', 'add_notification_style');
-
 /**
  * Outputs the content of the meta box
  */
 function notifications_meta_callback($post) {
-    wp_nonce_field(basename(__FILE__), 'notifications_nonce');
-    $notifications_stored_meta = get_post_meta($post->ID);
+    wp_nonce_field( basename( __FILE__ ), 'notifications_nonce' );
     include 'notifications-ui.php';
 }
 
@@ -217,7 +209,7 @@ function onesignal_notification_send($new_status, $old_status, $post) {
                 'blocking' => true,
                 'headers' => array(
                     "Content-type" => "application/json; charset=utf-8",
-                    "Authorization" => "Basic ZWFkMGYzYjMtNTY1ZS00YzQ2LThlNjktMzg1YzcyODA3ZGFh",
+                    "Authorization" => "Basic " . ONESIGNAL_API,
                 ),
                 'body' => $bodyAsJson,
             )
