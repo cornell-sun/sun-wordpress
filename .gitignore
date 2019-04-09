@@ -1,7 +1,6 @@
 .idea/*
 .vscode/*
 includes/sun-backend-config.php
-includes/sun-backend-constants.php
 request_tests.http
 vendor/*
 composer.phar

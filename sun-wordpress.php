@@ -35,6 +35,7 @@ if (!class_exists('SunAppExtension_Plugin')) {
       include_once 'endpoints/sun-backend-url-to-id-endpoint.php';
       include_once 'notifications/sun-notifications-extension.php';
       include_once 'includes/sun-backend-constants.php';
+      include_once 'includes/sun-backend-config.php';
 
       // add post_info_dict to each of the posts requested
       add_action('rest_api_init', 'SunAppExtension_Plugin::get_post_info_dict');
