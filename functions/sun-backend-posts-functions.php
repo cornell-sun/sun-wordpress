@@ -342,12 +342,13 @@ class SunAppExtension_PostsFunctions {
         $post_content = get_post_field( 'post_content', $post_id );
         $rendered_content = stripslashes( apply_filters( 'the_content', $post_content ) );
         $dom = new DOMDocument();
+        $rendered_content = mb_convert_encoding($rendered_content, 'HTML-ENTITIES', 'UTF-8');
         $dom->loadHTML($rendered_content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         $images = $dom->getElementsByTagName('img');
         foreach ($images as $image) {
           $image->removeAttribute('srcset');
         }
-        return $dom->saveHTML();
+        return mb_convert_encoding($dom->saveHTML(), 'UTF-8', 'HTML-ENTITIES');
     }
 
     /**
