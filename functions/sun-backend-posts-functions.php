@@ -3,9 +3,7 @@
  * Contains all static functions pertaining to adding information about posts
  * to the response.
  */
-
-class SunAppExtension_PostsFunctions
-{
+class SunAppExtension_PostsFunctions {
 
   /**
    * Return a dictionary aggregating all of the extra information about a post
@@ -22,22 +20,18 @@ class SunAppExtension_PostsFunctions
    *                                guaranteed only for photoGallery post_type_enum
    *      ~ post_content_no_srcset - rendered content string with all srcset attributes stripped
    */
-  public static function generate_post_entry($post_id)
-  {
-    $post = get_post($post_id);
-    $date_val = str_replace(" ", "T", $post->post_date);
+  public static function generate_post_entry( $post_id ) {
+    $post = get_post( $post_id );
+    $date_val = str_replace(" ", "T", $post->post_date );
     $title_val = $post->post_title;
-    $rendered_content = stripslashes(apply_filters('the_content', $post->post_content));
-    $content_val = $rendered_content;
-    $excerpt_val = get_the_excerpt($post_id);
+    $excerpt_val = get_the_excerpt( $post_id );
     $link_val = $post->guid;
-    $author_val = (int)$post->post_author;
+    $author_val = (int) $post->post_author;
 
     return array(
       'id'                        => $post_id,
       'date'                      => $date_val,
       'title'                     => $title_val,
-      'content'                   => $content_val,
       'excerpt'                   => $excerpt_val,
       'link'                      => $link_val,
       'author'                    => $author_val,
@@ -260,12 +254,11 @@ class SunAppExtension_PostsFunctions
    * or simply another article based on the categories associated with the post
    *
    */
-  public static function get_post_type_enum($post_id)
-  {
-    $category_names = self::get_category_names($post_id);
-    if (in_array("Video", $category_names)) {
+  public static function get_post_type_enum( $post_id ) {
+    $category_names = self::get_category_names( $post_id );
+    if ( in_array("Video", $category_names) )  {
       return "video";
-    } else if (in_array("Photo Gallery", $category_names)) {
+    } else if ( in_array("Photo Gallery", $category_names) )  {
       return "photoGallery";
     } else {
       return "article";
@@ -276,14 +269,13 @@ class SunAppExtension_PostsFunctions
    * Returns the URLs, captions, and other necessary metadata for image attachments or
    * video, or slideshows, or articles based on the $type_enum of a $post_id
    */
-  public static function get_post_enum_metadata($post_id)
-  {
+  public static function get_post_enum_metadata( $post_id ) {
 
-    $type_enum = self::get_post_type_enum($post_id);
-    if (strcmp($type_enum, "photoGallery") == 0) {
-      return self::get_post_image_attachments($post_id);
-    } elseif (strcmp($type_enum, "video") == 0) {
-      return self::get_post_video_attachments($post_id);
+    $type_enum = self::get_post_type_enum ( $post_id );
+    if ( strcmp( $type_enum, "photoGallery" ) == 0 ){
+      return self::get_post_image_attachments ( $post_id );
+    } elseif ( strcmp($type_enum, "video" ) == 0 ){
+      return self::get_post_video_attachments( $post_id );
     } else {
       return [];
     }
@@ -293,8 +285,7 @@ class SunAppExtension_PostsFunctions
    * attachments associated with a single post with id $post_id. Use regex to match
    * for iframe or video tags in the content and look for source of the video
    */
-  public static function get_post_video_attachments($post_id)
-  {
+  public static function get_post_video_attachments($post_id) {
     //Gets raw html content
     $post_content = self::get_content_no_srcset($post_id);
 
@@ -327,10 +318,8 @@ class SunAppExtension_PostsFunctions
    * Return the URLs, captions, and other necessary metadata for all the image
    * attachments associated with a single post with id $post_id.
    */
-  public static function get_post_image_attachments($post_id)
-  {
-    $post_attachments = get_attached_media("image", $post_id);
-
+  public static function get_post_image_attachments( $post_id ) {
+    $post_attachments = get_attached_media( "image" , $post_id );
     $media_results = array();
     /* Create an array of $media_obj which contain a bunch of metadata
      * associated with a post
@@ -357,22 +346,19 @@ class SunAppExtension_PostsFunctions
      * Looks for images used in the specific post by looking at the content
      * and matching for HTML <img> tags
      */
-    preg_match_all("/<img .* src=(.*)\?re.* alt=.*>/", $rendered_content, $used_images);
+    preg_match_all( "/<img .* src=(.*)\?re.* alt=.*>/", $rendered_content, $used_images );
     $used_images = array_map(
-      function ($ele) {
-        return end(explode("/", $ele));
-      },
-      $used_images[1]
-    );
-
+      function ( $ele ) { return end( explode( "/", $ele ) ); },
+        $used_images[1]
+      );
     /*
      * Builds a new array which consists of the metadata for actual images
      * used in the post by checking
      */
     $result = array();
-    foreach ($media_results as $media) {
-      if (in_array($media["name"], $used_images)) {
-        array_push($result, $media);
+    foreach ( $media_results as $media ) {
+      if ( in_array( $media["name"], $used_images ) ) {
+        array_push( $result, $media );
       }
     }
 
@@ -383,23 +369,26 @@ class SunAppExtension_PostsFunctions
    * Remove all occurrences of the attribute srcset from all images in the
    * given post with id $post_id.
    */
-  public static function get_content_no_srcset($post_id)
-  {
-    $post_content = get_post_field('post_content', $post_id);
-    $rendered_content = stripslashes(apply_filters('the_content', $post_content));
-    $content_srcset_removed = preg_replace("/srcset=\".*\"/", '', $rendered_content);
-
-    return $content_srcset_removed;
+  public static function get_content_no_srcset( $post_id ) {
+    $post_content = get_post_field( 'post_content', $post_id );
+    $rendered_content = stripslashes( apply_filters( 'the_content', $post_content ) );
+    $dom = new DOMDocument();
+    $rendered_content = mb_convert_encoding($rendered_content, 'HTML-ENTITIES', 'UTF-8');
+    $dom->loadHTML($rendered_content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+    $images = $dom->getElementsByTagName('img');
+    foreach ($images as $image) {
+      $image->removeAttribute('srcset');
+    }
+    return mb_convert_encoding($dom->saveHTML(), 'UTF-8', 'HTML-ENTITIES');
   }
 
   /**
    * Return the string name of the photographer who took the featured image.
    * Null if credits are stored in the caption or no associated image.
    */
-  public static function get_featured_media_credits($post_id)
-  {
-    $featured_media_id = (int)get_post_thumbnail_id($post_id);
-    $image_meta = get_post_meta($featured_media_id);
+  public static function get_featured_media_credits( $post_id ) {
+    $featured_media_id = (int)get_post_thumbnail_id( $post_id );
+    $image_meta = get_post_meta( $featured_media_id );
     return $image_meta["_media_credit"][0];
   }
 
@@ -408,26 +397,26 @@ class SunAppExtension_PostsFunctions
    * The returned dictionaries contain the posts's unique ID, its title, its author dictionary,
    * and its featured media dictionary.
    */
-  public static function get_suggested_article_ids($post_id)
-  {
-    // Docs: http://largo.re    adthedocs.io/api/inc/related-content.html?highlight=largo_related
-    $related_arts = new Largo_Related(NUM_RELATED_ARTICLES, $post_id);
+  public static function get_suggested_article_ids( $post_id ) {
+    // Docs: http://largo.readthedocs.io/api/inc/related-content.html?highlight=largo_related
+    $related_arts = new Largo_Related( NUM_RELATED_ARTICLES, $post_id );
 
     // turn related post ids into desired dictionaries
-    $articles = array_map(function ($post_id) {
-      $post = get_post($post_id);
+    $articles = array_map( function ( $post_id ) {
+      $post = get_post( $post_id );
       return [
         "post_id"           => $post_id,
         "title"             => $post->post_title,
-        "author_dict"       => self::get_author_dict($post_id),
-        "featured_media"    => self::get_featured_media_urls($post_id)
+        "author_dict"       => self::get_author_dict( $post_id ),
+        "featured_media"    => self::get_featured_media_urls( $post_id )
       ];
-    }, $related_arts->ids());
+    }, $related_arts->ids() );
 
     return array_values(
-      array_filter($articles, function ($article) {
-        return is_numeric($article["post_id"]);
+      array_filter( $articles, function ( $article ) {
+        return is_numeric( $article["post_id"] );
       })
     );
   }
 }
+?>
