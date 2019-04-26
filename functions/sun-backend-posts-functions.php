@@ -176,8 +176,7 @@ class SunAppExtension_PostsFunctions {
    * Return the string caption for the featured media for a given post with
    * id = $post_id.
    */
-  public static function get_featured_media_caption($post_id)
-  {
+  public static function get_featured_media_caption($post_id) {
     $featured_media_id = (int)get_post_thumbnail_id($post_id);
     $image = get_post($featured_media_id);
     return $image->post_excerpt;
@@ -187,8 +186,7 @@ class SunAppExtension_PostsFunctions {
    * Return a list of string names of the categories a given post with
    * id $post_id is tagged with.
    */
-  public static function get_category_names($post_id)
-  {
+  public static function get_category_names($post_id) {
     $categories = get_the_category($post_id);
 
     // no categories for given post
@@ -209,8 +207,7 @@ class SunAppExtension_PostsFunctions {
    * associated with. We return the category with the smallest ID
    * and return News if no categories are attributed.
    */
-  public static function get_primary_category($post_id)
-  {
+  public static function get_primary_category($post_id) {
     $categories = get_the_category($post_id);
     if (empty($categories) || !$categories) {
       // no categories, return News = 1
@@ -224,7 +221,6 @@ class SunAppExtension_PostsFunctions {
         $min_category = $category;
       }
     }
-
     return $min_category->name;
   }
 
@@ -232,8 +228,7 @@ class SunAppExtension_PostsFunctions {
    * Return the corresponding array of tag strings for a given
    * post with id $post_id.
    */
-  public static function get_tag_names($post_id)
-  {
+  public static function get_tag_names($post_id) {
     $tags = get_the_tags($post_id);
     // no tags for associated post
     if (!$tags) {
@@ -252,9 +247,9 @@ class SunAppExtension_PostsFunctions {
    * or simply another article based on the categories associated with the post
    *
    */
-  public static function get_post_type_enum( $post_id ) {
-    $category_names = self::get_category_names( $post_id );
-    if ( in_array("Video", $category_names) )  {
+  public static function get_post_type_enum($post_id) {
+    $category_names = self::get_category_names($post_id);
+    if (in_array("Video", $category_names))  {
       return "video";
     } else if ( in_array("Photo Gallery", $category_names) )  {
       return "photoGallery";
@@ -268,7 +263,6 @@ class SunAppExtension_PostsFunctions {
    * video, or slideshows, or articles based on the $type_enum of a $post_id
    */
   public static function get_post_enum_metadata( $post_id ) {
-
     $type_enum = self::get_post_type_enum ( $post_id );
     if ( strcmp( $type_enum, "photoGallery" ) == 0 ){
       return self::get_post_image_attachments ( $post_id );
@@ -359,7 +353,6 @@ class SunAppExtension_PostsFunctions {
         array_push( $result, $media );
       }
     }
-
     return $result;
   }
 
