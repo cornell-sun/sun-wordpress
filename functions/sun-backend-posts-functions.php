@@ -3,7 +3,6 @@
  * Contains all static functions pertaining to adding information about posts
  * to the response.
  */
-
 class SunAppExtension_PostsFunctions {
 
   /**
@@ -36,18 +35,30 @@ class SunAppExtension_PostsFunctions {
       'excerpt'                   => $excerpt_val,
       'link'                      => $link_val,
       'author'                    => $author_val,
-      'author_dict'               => self::get_author_dict( $post_id ),
-      'featured_media_url_string' => self::get_featured_media_urls( $post_id ),
-      'featured_media_caption'    => self::get_featured_media_caption( $post_id ),
-      'featured_media_credit'     => self::get_featured_media_credits( $post_id ),
-      'category_strings'          => self::get_category_names( $post_id ),
-      'primary_category'          => self::get_primary_category( $post_id ),
-      'tag_strings'               => self::get_tag_names( $post_id ),
-      'post_type_enum'            => self::get_post_type_enum( $post_id ),
-      'post_attachments_meta'     => self::get_post_enum_metadata( $post_id ),
-      'post_content_no_srcset'    => self::get_content_no_srcset( $post_id ),
-      'suggested_article_ids'     => self::get_suggested_article_ids( $post_id )
+      'author_dict'               => self::get_author_dict($post_id),
+      'featured_media_url_string' => self::get_featured_media_urls($post_id),
+      'featured_media_caption'    => self::get_featured_media_caption($post_id),
+      'featured_media_credit'     => self::get_featured_media_credits($post_id),
+      'category_strings'          => self::get_category_names($post_id),
+      'primary_category'          => self::get_primary_category($post_id),
+      'tag_strings'               => self::get_tag_names($post_id),
+      'post_type_enum'            => self::get_post_type_enum($post_id),
+      'post_attachments_meta'     => self::get_post_enum_metadata($post_id),
+      'post_content_no_srcset'    => self::get_content_no_srcset($post_id),
+      'suggested_article_ids'     => self::get_suggested_article_ids($post_id)
     );
+  }
+  /**
+   *  If any of the values in $array are empty strings, set them to null instead
+   */
+  public static function set_empty_null($arr)
+  {
+    foreach ($arr as $key => $val) {
+      if ($val === "") {
+        $arr[$key] = NULL;
+      }
+    }
+    return $arr;
   }
 
   /**
@@ -55,55 +66,64 @@ class SunAppExtension_PostsFunctions {
    * id = $post_id. This includes id, name, url for the avatar, bio snippet
    * and a link to their author page.
    */
-  public static function get_author_dict( $post_id ) {
-    $post = get_post( $post_id );
-    $post_meta = get_post_meta( $post_id );
-    $author_names = explode( ", ", $post_meta[ "largo_byline_text" ][ 0 ] );
+  public static function get_author_dict($post_id)
+  {
+    $post = get_post($post_id);
+    $post_meta = get_post_meta($post_id);
+    $author_names = explode(", ", $post_meta["largo_byline_text"][0]);
 
-    if ( $author_names[0] === "" ) {
+    if ($author_names[0] === "") {
       // no byline author text, default to normal author
       $author_id = (int)$post->post_author;
-      $user_obj = get_user_by( "id", $author_id );
+      $user_obj = get_user_by("id", $author_id);
       //            $user_meta = get_user_meta( $author_id );
-      $user = $user_obj->display_name;
-      //            $user = array(
-      //                "id"            => $author_id,
-      //                "name"          => $user_obj->display_name,
-      //                "avatar_url"    => get_avatar_url($author_id),
-      //                "bio"           => $user_meta["description"][0],
-      //                "link"          => get_author_posts_url($author_id),
-      //            );
-
-      return [ [ "name" => $user ] ];
+      // $user = $user_obj->display_name;
+      $user = array(
+        "id"            => $author_id,
+        "name"          => $user_obj->display_name,
+        "avatar_url"    => get_avatar_url($author_id),
+        "bio"           => $user_meta["description"][0],
+        "link"          => get_author_posts_url($author_id),
+        "twitter"       => $user_meta["twitter"][0],
+        "linkedin"      => $user_meta["linkedin"][0],
+        "email"         => $user_obj->data->user_email
+      );
+      $user = self::set_empty_null($user);
+      return [$user];
     }
 
     $users = array();
-    foreach ( $author_names as $name ) {
+    foreach ($author_names as $name) {
       // reverse search for user by display name
-      $user_query = new WP_User_Query( array(
+      $user_query = new WP_User_Query(array(
         'search' => $name,
-        'search_columns' => array( 'display_name' ),
+        'search_columns' => array('display_name'),
       ));
 
-      if ( !empty( $user_query->results ) ) {
+      if (!empty($user_query->results)) {
         // query found user entry, add it to the array
         //                $first_res = $user_query->results[0];
         //                $user_id = $first_res->data->ID;
-        //                $user_meta = get_user_meta( $user_id );
-        $name_dict = [ "name" => $name ];
-        //                $user_dict = array(
-        //                    "id"            => $user_id,
-        //                    "name"          => $name,
-        //                    "avatar_url"    => get_avatar_url( $user_id ),
-        //                    "bio"           => $user_meta["description"][0],
-        //                    "link"          => get_author_posts_url( $user_id ),
-        //                );
+        $user_meta = get_user_meta($user_id);
+        $user_obj = get_user_by("id", $user_id);
+        $user = array(
+          "id"            => $user_id,
+          "name"          => $user_obj->display_name,
+          "avatar_url"    => get_avatar_url($user_id),
+          "bio"           => $user_meta["description"][0],
+          "link"          => get_author_posts_url($user_id),
+          "twitter"       => $user_meta["twitter"][0],
+          "linkedin"      => $user_meta["linkedin"][0],
+          "email"         => $user_obj->data->user_email
+        );
 
-        array_push( $users, $name_dict );
+        //If any of the values are empty strings, set them to null instead
+        $user = self::set_empty_null($user);
+        array_push($users, $user);
       } else {
         // empty results, just return the name for now
-        $name_dict = [ "name" => $name ];
-        array_push( $users, $name_dict );
+        $name_dict = ["name" => $name];
+        array_push($users, $name_dict);
       }
     }
     return $users;
@@ -114,8 +134,9 @@ class SunAppExtension_PostsFunctions {
    * in 3 different sizes: thumbnail, medium_large, and full. Gives back
    * the url, width, and height for each image size.
    */
-  public static function get_featured_media_urls( $post_id ) {
-    $featured_media_id = (int)get_post_thumbnail_id( $post_id );
+  public static function get_featured_media_urls($post_id)
+  {
+    $featured_media_id = (int)get_post_thumbnail_id($post_id);
     $media_med_lg = wp_get_attachment_image_src(
       $featured_media_id,
       "medium_large"
@@ -157,9 +178,10 @@ class SunAppExtension_PostsFunctions {
    * Return the string caption for the featured media for a given post with
    * id = $post_id.
    */
-  public static function get_featured_media_caption( $post_id ) {
-    $featured_media_id = (int)get_post_thumbnail_id( $post_id );
-    $image = get_post( $featured_media_id );
+  public static function get_featured_media_caption($post_id)
+  {
+    $featured_media_id = (int)get_post_thumbnail_id($post_id);
+    $image = get_post($featured_media_id);
     return $image->post_excerpt;
   }
 
@@ -167,16 +189,21 @@ class SunAppExtension_PostsFunctions {
    * Return a list of string names of the categories a given post with
    * id $post_id is tagged with.
    */
-  public static function get_category_names( $post_id ) {
-    $categories = get_the_category( $post_id );
+  public static function get_category_names($post_id)
+  {
+    $categories = get_the_category($post_id);
 
     // no categories for given post
-    if ( !$categories ) { return array(); }
+    if (!$categories) {
+      return array();
+    }
 
     return array_map(
-      function ( $category ) { return $category->name; },
-        $categories
-      );
+      function ($category) {
+        return $category->name;
+      },
+      $categories
+    );
   }
 
   /**
@@ -184,9 +211,10 @@ class SunAppExtension_PostsFunctions {
    * associated with. We return the category with the smallest ID
    * and return News if no categories are attributed.
    */
-  public static function get_primary_category( $post_id ) {
-    $categories = get_the_category( $post_id );
-    if ( empty( $categories ) || !$categories ) {
+  public static function get_primary_category($post_id)
+  {
+    $categories = get_the_category($post_id);
+    if (empty($categories) || !$categories) {
       // no categories, return News = 1
       return "News";
     }
@@ -194,7 +222,7 @@ class SunAppExtension_PostsFunctions {
     // linear search for minimum category id
     $min_category = $categories[0];
     foreach ($categories as $category) {
-      if ( $category->term_id < $min_category->term_id ) {
+      if ($category->term_id < $min_category->term_id) {
         $min_category = $category;
       }
     }
@@ -206,14 +234,19 @@ class SunAppExtension_PostsFunctions {
    * Return the corresponding array of tag strings for a given
    * post with id $post_id.
    */
-  public static function get_tag_names( $post_id ) {
-    $tags = get_the_tags( $post_id );
+  public static function get_tag_names($post_id)
+  {
+    $tags = get_the_tags($post_id);
     // no tags for associated post
-    if ( !$tags ) { return array(); }
+    if (!$tags) {
+      return array();
+    }
     return array_map(
-      function ( $tag ) { return $tag->name; },
-        $tags
-      );
+      function ($tag) {
+        return $tag->name;
+      },
+      $tags
+    );
   }
 
   /**
@@ -252,12 +285,12 @@ class SunAppExtension_PostsFunctions {
    * attachments associated with a single post with id $post_id. Use regex to match
    * for iframe or video tags in the content and look for source of the video
    */
-  public static function get_post_video_attachments ($post_id) {
+  public static function get_post_video_attachments($post_id) {
     //Gets raw html content
     $post_content = self::get_content_no_srcset($post_id);
 
     //Filter out any extraneous characters
-    $post_content = preg_replace( "/( )|(')|(\\\")/", "", $post_content );
+    $post_content = preg_replace("/( )|(')|(\\\")/", "", $post_content);
 
     $used_video = array();
 
@@ -291,23 +324,23 @@ class SunAppExtension_PostsFunctions {
     /* Create an array of $media_obj which contain a bunch of metadata
      * associated with a post
      */
-    foreach ( $post_attachments as $attachment ) {
+    foreach ($post_attachments as $attachment) {
       $media_id = $attachment->ID;
-      $media_meta = wp_get_attachment_metadata( $media_id );
+      $media_meta = wp_get_attachment_metadata($media_id);
       $author_id = $attachment->post_author;
       $media_obj = array(
         "id"            => $media_id,
-        "name"          => end( explode( "/", $media_meta["file"] ) ),
+        "name"          => end(explode("/", $media_meta["file"])),
         "caption"       => $attachment->post_excerpt,
         "media_type"    => $attachment->post_mime_type,
-        "author_name"   => get_the_author_meta( 'display_name', $author_id ),
-        "url"           => wp_get_attachment_url( $media_id, 'full' )
+        "author_name"   => get_the_author_meta('display_name', $author_id),
+        "url"           => wp_get_attachment_url($media_id, 'full')
       );
-      array_push( $media_results, $media_obj );
+      array_push($media_results, $media_obj);
     }
 
-    $post_content = get_the_content( $post_id );
-    $rendered_content = stripslashes( apply_filters( 'the_content', $post_content ) );
+    $post_content = get_the_content($post_id);
+    $rendered_content = stripslashes(apply_filters('the_content', $post_content));
     $used_images = array();
     /*
      * Looks for images used in the specific post by looking at the content
@@ -318,7 +351,6 @@ class SunAppExtension_PostsFunctions {
       function ( $ele ) { return end( explode( "/", $ele ) ); },
         $used_images[1]
       );
-
     /*
      * Builds a new array which consists of the metadata for actual images
      * used in the post by checking
@@ -387,5 +419,4 @@ class SunAppExtension_PostsFunctions {
     );
   }
 }
-
 ?>
