@@ -91,7 +91,6 @@ class SunAppExtension_PostsFunctions {
       $user = self::set_empty_null($user);
       return [$user];
     }
-
     $users = array();
     foreach ($author_names as $name) {
       // reverse search for user by display name
@@ -134,8 +133,7 @@ class SunAppExtension_PostsFunctions {
    * in 3 different sizes: thumbnail, medium_large, and full. Gives back
    * the url, width, and height for each image size.
    */
-  public static function get_featured_media_urls($post_id)
-  {
+  public static function get_featured_media_urls($post_id) {
     $featured_media_id = (int)get_post_thumbnail_id($post_id);
     $media_med_lg = wp_get_attachment_image_src(
       $featured_media_id,
