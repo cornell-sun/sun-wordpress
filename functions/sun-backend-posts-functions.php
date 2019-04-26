@@ -25,8 +25,6 @@ class SunAppExtension_PostsFunctions {
         $post = get_post( $post_id );
         $date_val = str_replace(" ", "T", $post->post_date );
         $title_val = $post->post_title;
-        $rendered_content = stripslashes( apply_filters( 'the_content', $post->post_content ) );
-        $content_val = $rendered_content;
         $excerpt_val = get_the_excerpt( $post_id );
         $link_val = $post->guid;
         $author_val = (int) $post->post_author;
@@ -35,7 +33,6 @@ class SunAppExtension_PostsFunctions {
             'id'                        => $post_id,
             'date'                      => $date_val,
             'title'                     => $title_val,
-            'content'                   => $content_val,
             'excerpt'                   => $excerpt_val,
             'link'                      => $link_val,
             'author'                    => $author_val,
@@ -51,7 +48,6 @@ class SunAppExtension_PostsFunctions {
             'post_content_no_srcset'    => self::get_content_no_srcset( $post_id ),
             'suggested_article_ids'     => self::get_suggested_article_ids( $post_id )
         );
-
     }
 
     /**
@@ -256,9 +252,9 @@ class SunAppExtension_PostsFunctions {
     * attachments associated with a single post with id $post_id. Use regex to match
     * for iframe or video tags in the content and look for source of the video
     */
-    public static function get_post_video_attachments ( $post_id ) {
+    public static function get_post_video_attachments ($post_id) {
         //Gets raw html content
-        $post_content = self::get_content_no_srcset( $post_id );
+        $post_content = self::get_content_no_srcset($post_id);
 
         //Filter out any extraneous characters
         $post_content = preg_replace( "/( )|(')|(\\\")/", "", $post_content );
@@ -282,7 +278,7 @@ class SunAppExtension_PostsFunctions {
             "author_name"   => NULL,
             "url"           => $video[0]
         );
-        return [ $media_obj ];
+        return [$media_obj];
     }
 
     /**
@@ -345,9 +341,16 @@ class SunAppExtension_PostsFunctions {
     public static function get_content_no_srcset( $post_id ) {
         $post_content = get_post_field( 'post_content', $post_id );
         $rendered_content = stripslashes( apply_filters( 'the_content', $post_content ) );
-        $content_srcset_removed = preg_replace( "/srcset=\".*\"/", '', $rendered_content );
-
-        return $content_srcset_removed;
+        //$content_srcset_removed = preg_replace( "/srcset=\".*\"/", '', $rendered_content );
+        //return $content_srcset_removed;
+        $dom = new DOMDocument();
+        $dom->loadHTML($rendered_content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        $images = $dom->getElementsByTagName('img');
+        foreach ($images as $image) {
+          $image->removeAttribute('srcset');
+        }
+        $content = $dom->saveHTML();
+        return $content;
     }
 
     /**
@@ -366,7 +369,7 @@ class SunAppExtension_PostsFunctions {
      * and its featured media dictionary.
      */
     public static function get_suggested_article_ids( $post_id ) {
-        // Docs: http://largo.re    adthedocs.io/api/inc/related-content.html?highlight=largo_related
+        // Docs: http://largo.readthedocs.io/api/inc/related-content.html?highlight=largo_related
         $related_arts = new Largo_Related( NUM_RELATED_ARTICLES, $post_id );
 
         // turn related post ids into desired dictionaries
