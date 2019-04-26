@@ -55,6 +55,16 @@ class SunAppExtension_PostsFunctions
         );
     }
 
+    public static function set_empty_null($array)
+    {
+        foreach ($array as $key => $val) {
+            if ($val == "") {
+                $array[$key] = NULL;
+            }
+        }
+        return $array;
+    }
+
     /**
      * Return the information about the author for a given post with
      * id = $post_id. This includes id, name, url for the avatar, bio snippet
@@ -83,30 +93,7 @@ class SunAppExtension_PostsFunctions
                 "email"         => $user_obj->data->user_email
             );
             //If any of the values are empty strings, set them to null instead
-            if ($user["id"] == "") {
-                $user["id"] = NULL;
-            }
-            if ($user["name"] == "") {
-                $user["name"] = NULL;
-            }
-            if ($user["avatar_url"] == "") {
-                $user["avatar_url"] = NULL;
-            }
-            if ($user["bio"] == "") {
-                $user["bio"] = NULL;
-            }
-            if ($user["link"] == "") {
-                $user["link"] = NULL;
-            }
-            if ($user["twitter"] == "") {
-                $user["twitter"] = NULL;
-            }
-            if ($user["linkedin"] == "") {
-                $user["linkedin"] = NULL;
-            }
-            if ($user["email"] == "") {
-                $user["email"] = NULL;
-            }
+            $user = self::set_empty_null($user);
 
             return [$user];
         }
