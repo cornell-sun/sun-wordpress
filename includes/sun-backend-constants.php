@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  * Contains all the constants used throughout the application in one place.
  */

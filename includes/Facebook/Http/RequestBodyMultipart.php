@@ -21,6 +21,7 @@
  * DEALINGS IN THE SOFTWARE.
  *
  */
+
 namespace Facebook\Http;
 
 use Facebook\FileUpload\FacebookFile;
@@ -52,8 +53,8 @@ class RequestBodyMultipart implements RequestBodyInterface
     private $files = [];
 
     /**
-     * @param array  $params   The parameters to send with this request.
-     * @param array  $files    The files to send with this request.
+     * @param array $params The parameters to send with this request.
+     * @param array $files The files to send with this request.
      * @param string $boundary Provide a specific boundary.
      */
     public function __construct(array $params = [], array $files = [], $boundary = null)
@@ -100,7 +101,7 @@ class RequestBodyMultipart implements RequestBodyInterface
     /**
      * Get the string needed to transfer a file.
      *
-     * @param string       $name
+     * @param string $name
      * @param FacebookFile $file
      *
      * @return string

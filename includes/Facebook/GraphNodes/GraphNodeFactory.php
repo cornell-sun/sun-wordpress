@@ -21,6 +21,7 @@
  * DEALINGS IN THE SOFTWARE.
  *
  */
+
 namespace Facebook\GraphNodes;
 
 use Facebook\FacebookResponse;
@@ -183,7 +184,7 @@ class GraphNodeFactory
      * Tries to convert a FacebookResponse entity into a GraphEdge.
      *
      * @param string|null $subclassName The GraphNode sub class to cast the list items to.
-     * @param boolean     $auto_prefix  Toggle to auto-prefix the subclass name.
+     * @param boolean $auto_prefix Toggle to auto-prefix the subclass name.
      *
      * @return GraphEdge
      *
@@ -246,7 +247,7 @@ class GraphNodeFactory
     /**
      * Safely instantiates a GraphNode of $subclassName.
      *
-     * @param array       $data         The array of data to iterate over.
+     * @param array $data The array of data to iterate over.
      * @param string|null $subclassName The subclass to cast this collection to.
      *
      * @return GraphNode
@@ -287,9 +288,9 @@ class GraphNodeFactory
     /**
      * Takes an array of values and determines how to cast each node.
      *
-     * @param array       $data         The array of data to iterate over.
+     * @param array $data The array of data to iterate over.
      * @param string|null $subclassName The subclass to cast this collection to.
-     * @param string|null $parentKey    The key of this data (Graph edge).
+     * @param string|null $parentKey The key of this data (Graph edge).
      * @param string|null $parentNodeId The parent Graph node ID.
      *
      * @return GraphNode|GraphEdge
@@ -314,9 +315,9 @@ class GraphNodeFactory
     /**
      * Return an array of GraphNode's.
      *
-     * @param array       $data         The array of data to iterate over.
+     * @param array $data The array of data to iterate over.
      * @param string|null $subclassName The GraphNode subclass to cast each item in the list to.
-     * @param string|null $parentKey    The key of this data (Graph edge).
+     * @param string|null $parentKey The key of this data (Graph edge).
      * @param string|null $parentNodeId The parent Graph node ID.
      *
      * @return GraphEdge

@@ -21,6 +21,7 @@
  * DEALINGS IN THE SOFTWARE.
  *
  */
+
 namespace Facebook\Http;
 
 /**
@@ -48,9 +49,9 @@ class GraphRawResponse
     /**
      * Creates a new GraphRawResponse entity.
      *
-     * @param string|array $headers        The headers as a raw string or array.
-     * @param string       $body           The raw response body.
-     * @param int          $httpStatusCode The HTTP response code (if sending headers as parsed array).
+     * @param string|array $headers The headers as a raw string or array.
+     * @param string $body The raw response body.
+     * @param int $httpStatusCode The HTTP response code (if sending headers as parsed array).
      */
     public function __construct($headers, $body, $httpStatusCode = null)
     {

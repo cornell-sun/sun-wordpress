@@ -21,6 +21,7 @@
  * DEALINGS IN THE SOFTWARE.
  *
  */
+
 namespace Facebook\HttpClients;
 
 use GuzzleHttp\Client;
@@ -39,10 +40,10 @@ class HttpClientsFactory
      *
      * @param FacebookHttpClientInterface|Client|string|null $handler
      *
-     * @throws Exception                If the cURL extension or the Guzzle client aren't available (if required).
+     * @return FacebookHttpClientInterface
      * @throws InvalidArgumentException If the http client handler isn't "curl", "stream", "guzzle", or an instance of Facebook\HttpClients\FacebookHttpClientInterface.
      *
-     * @return FacebookHttpClientInterface
+     * @throws Exception                If the cURL extension or the Guzzle client aren't available (if required).
      */
     public static function createHttpClient($handler)
     {

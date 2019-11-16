@@ -21,6 +21,7 @@
  * DEALINGS IN THE SOFTWARE.
  *
  */
+
 namespace Facebook\PseudoRandomString;
 
 use Facebook\Exceptions\FacebookSDKException;
@@ -38,9 +39,9 @@ class PseudoRandomStringGeneratorFactory
      *
      * @param PseudoRandomStringGeneratorInterface|string|null $generator
      *
+     * @return PseudoRandomStringGeneratorInterface
      * @throws InvalidArgumentException If the pseudo random string generator must be set to "random_bytes", "mcrypt", "openssl", or "urandom", or be an instance of Facebook\PseudoRandomString\PseudoRandomStringGeneratorInterface.
      *
-     * @return PseudoRandomStringGeneratorInterface
      */
     public static function createPseudoRandomStringGenerator($generator)
     {
@@ -71,9 +72,9 @@ class PseudoRandomStringGeneratorFactory
     /**
      * Detects which pseudo-random string generator to use.
      *
+     * @return PseudoRandomStringGeneratorInterface
      * @throws FacebookSDKException If unable to detect a cryptographically secure pseudo-random string generator.
      *
-     * @return PseudoRandomStringGeneratorInterface
      */
     private static function detectDefaultPseudoRandomStringGenerator()
     {

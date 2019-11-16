@@ -21,6 +21,7 @@
  * DEALINGS IN THE SOFTWARE.
  *
  */
+
 namespace Facebook;
 
 use Facebook\Exceptions\FacebookSDKException;
@@ -50,7 +51,7 @@ class SignedRequest
     /**
      * Instantiate a new SignedRequest entity.
      *
-     * @param FacebookApp $facebookApp      The FacebookApp entity.
+     * @param FacebookApp $facebookApp The FacebookApp entity.
      * @param string|null $rawSignedRequest The raw signed request.
      */
     public function __construct(FacebookApp $facebookApp, $rawSignedRequest = null)
@@ -89,7 +90,7 @@ class SignedRequest
     /**
      * Returns a property from the signed request data if available.
      *
-     * @param string     $key
+     * @param string $key
      * @param mixed|null $default
      *
      * @return mixed|null

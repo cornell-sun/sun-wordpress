@@ -21,6 +21,7 @@
  * DEALINGS IN THE SOFTWARE.
  *
  */
+
 namespace Facebook;
 
 use ArrayIterator;
@@ -49,10 +50,10 @@ class FacebookBatchRequest extends FacebookRequest implements IteratorAggregate,
     /**
      * Creates a new Request entity.
      *
-     * @param FacebookApp|null        $app
-     * @param array                   $requests
+     * @param FacebookApp|null $app
+     * @param array $requests
      * @param AccessToken|string|null $accessToken
-     * @param string|null             $graphVersion
+     * @param string|null $graphVersion
      */
     public function __construct(FacebookApp $app = null, array $requests = [], $accessToken = null, $graphVersion = null)
     {
@@ -65,7 +66,7 @@ class FacebookBatchRequest extends FacebookRequest implements IteratorAggregate,
      * Adds a new request to the array.
      *
      * @param FacebookRequest|array $request
-     * @param string|null|array     $options Array of batch request options e.g. 'name', 'omit_response_on_success'.
+     * @param string|null|array $options Array of batch request options e.g. 'name', 'omit_response_on_success'.
      *                                       If a string is given, it is the value of the 'name' option.
      *
      * @return FacebookBatchRequest
@@ -234,10 +235,10 @@ class FacebookBatchRequest extends FacebookRequest implements IteratorAggregate,
     /**
      * Converts a Request entity into an array that is batch-friendly.
      *
-     * @param FacebookRequest   $request       The request entity to convert.
-     * @param string|null|array $options       Array of batch request options e.g. 'name', 'omit_response_on_success'.
+     * @param FacebookRequest $request The request entity to convert.
+     * @param string|null|array $options Array of batch request options e.g. 'name', 'omit_response_on_success'.
      *                                         If a string is given, it is the value of the 'name' option.
-     * @param string|null       $attachedFiles Names of files associated with the request.
+     * @param string|null $attachedFiles Names of files associated with the request.
      *
      * @return array
      */

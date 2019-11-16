@@ -21,6 +21,7 @@
  * DEALINGS IN THE SOFTWARE.
  *
  */
+
 namespace Facebook;
 
 use Facebook\GraphNodes\GraphNodeFactory;
@@ -68,9 +69,9 @@ class FacebookResponse
      * Creates a new Response entity.
      *
      * @param FacebookRequest $request
-     * @param string|null     $body
-     * @param int|null        $httpStatusCode
-     * @param array|null      $headers
+     * @param string|null $body
+     * @param int|null $httpStatusCode
+     * @param array|null $headers
      */
     public function __construct(FacebookRequest $request, $body = null, $httpStatusCode = null, array $headers = [])
     {
@@ -377,7 +378,7 @@ class FacebookResponse
      * Instantiate a new GraphList from response.
      *
      * @param string|null $subclassName The GraphNode subclass to cast list items to.
-     * @param boolean     $auto_prefix  Toggle to auto-prefix the subclass name.
+     * @param boolean $auto_prefix Toggle to auto-prefix the subclass name.
      *
      * @return \Facebook\GraphNodes\GraphList
      *
@@ -395,7 +396,7 @@ class FacebookResponse
      * Instantiate a new GraphEdge from response.
      *
      * @param string|null $subclassName The GraphNode subclass to cast list items to.
-     * @param boolean     $auto_prefix  Toggle to auto-prefix the subclass name.
+     * @param boolean $auto_prefix Toggle to auto-prefix the subclass name.
      *
      * @return \Facebook\GraphNodes\GraphEdge
      *

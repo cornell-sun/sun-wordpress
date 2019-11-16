@@ -21,6 +21,7 @@
  * DEALINGS IN THE SOFTWARE.
  *
  */
+
 namespace Facebook\PersistentData;
 
 use Facebook\Exceptions\FacebookSDKException;

@@ -21,6 +21,7 @@
  * DEALINGS IN THE SOFTWARE.
  *
  */
+
 namespace Facebook;
 
 use Facebook\Authentication\AccessToken;
@@ -86,13 +87,13 @@ class FacebookRequest
     /**
      * Creates a new Request entity.
      *
-     * @param FacebookApp|null        $app
+     * @param FacebookApp|null $app
      * @param AccessToken|string|null $accessToken
-     * @param string|null             $method
-     * @param string|null             $endpoint
-     * @param array|null              $params
-     * @param string|null             $eTag
-     * @param string|null             $graphVersion
+     * @param string|null $method
+     * @param string|null $endpoint
+     * @param array|null $params
+     * @param string|null $eTag
+     * @param string|null $graphVersion
      */
     public function __construct(FacebookApp $app = null, $accessToken = null, $method = null, $endpoint = null, array $params = [], $eTag = null, $graphVersion = null)
     {
@@ -379,7 +380,7 @@ class FacebookRequest
     /**
      * Add a file to be uploaded.
      *
-     * @param string       $key
+     * @param string $key
      * @param FacebookFile $file
      */
     public function addFile($key, FacebookFile $file)

@@ -21,6 +21,7 @@
  * DEALINGS IN THE SOFTWARE.
  *
  */
+
 namespace Facebook\FileUpload;
 
 use Facebook\Authentication\AccessToken;
@@ -59,10 +60,10 @@ class FacebookResumableUploader
     protected $graphVersion;
 
     /**
-     * @param FacebookApp             $app
-     * @param FacebookClient          $client
+     * @param FacebookApp $app
+     * @param FacebookClient $client
      * @param AccessToken|string|null $accessToken
-     * @param string                  $graphVersion
+     * @param string $graphVersion
      */
     public function __construct(FacebookApp $app, FacebookClient $client, $accessToken, $graphVersion)
     {

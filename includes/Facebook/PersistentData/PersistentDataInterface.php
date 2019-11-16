@@ -21,6 +21,7 @@
  * DEALINGS IN THE SOFTWARE.
  *
  */
+
 namespace Facebook\PersistentData;
 
 /**
@@ -43,7 +44,7 @@ interface PersistentDataInterface
      * Set a value in the persistent data store.
      *
      * @param string $key
-     * @param mixed  $value
+     * @param mixed $value
      */
     public function set($key, $value);
 }

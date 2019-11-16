@@ -21,6 +21,7 @@
  * DEALINGS IN THE SOFTWARE.
  *
  */
+
 namespace Facebook\Exceptions;
 
 use Facebook\FacebookResponse;
@@ -45,7 +46,7 @@ class FacebookResponseException extends FacebookSDKException
     /**
      * Creates a FacebookResponseException.
      *
-     * @param FacebookResponse     $response          The response that threw the exception.
+     * @param FacebookResponse $response The response that threw the exception.
      * @param FacebookSDKException $previousException The more detailed exception.
      */
     public function __construct(FacebookResponse $response, FacebookSDKException $previousException = null)
@@ -141,7 +142,7 @@ class FacebookResponseException extends FacebookSDKException
      * Checks isset and returns that or a default value.
      *
      * @param string $key
-     * @param mixed  $default
+     * @param mixed $default
      *
      * @return mixed
      */

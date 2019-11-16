@@ -21,6 +21,7 @@
  * DEALINGS IN THE SOFTWARE.
  *
  */
+
 namespace Facebook\GraphNodes;
 
 /**
@@ -58,8 +59,8 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
     /**
      * Gets the value of a field from the Graph node.
      *
-     * @param string $name    The field to retrieve.
-     * @param mixed  $default The default to return if the field doesn't exist.
+     * @param string $name The field to retrieve.
+     * @param mixed $default The default to return if the field doesn't exist.
      *
      * @return mixed
      */
@@ -75,8 +76,8 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
     /**
      * Gets the value of the named property for this graph object.
      *
-     * @param string $name    The property to retrieve.
-     * @param mixed  $default The default to return if the property doesn't exist.
+     * @param string $name The property to retrieve.
+     * @param mixed $default The default to return if the property doesn't exist.
      *
      * @return mixed
      *

@@ -21,6 +21,7 @@
  * DEALINGS IN THE SOFTWARE.
  *
  */
+
 namespace Facebook;
 
 use Facebook\Authentication\AccessToken;
@@ -321,10 +322,10 @@ class Facebook
     /**
      * Sends a GET request to Graph and returns the result.
      *
-     * @param string                  $endpoint
+     * @param string $endpoint
      * @param AccessToken|string|null $accessToken
-     * @param string|null             $eTag
-     * @param string|null             $graphVersion
+     * @param string|null $eTag
+     * @param string|null $graphVersion
      *
      * @return FacebookResponse
      *
@@ -345,11 +346,11 @@ class Facebook
     /**
      * Sends a POST request to Graph and returns the result.
      *
-     * @param string                  $endpoint
-     * @param array                   $params
+     * @param string $endpoint
+     * @param array $params
      * @param AccessToken|string|null $accessToken
-     * @param string|null             $eTag
-     * @param string|null             $graphVersion
+     * @param string|null $eTag
+     * @param string|null $graphVersion
      *
      * @return FacebookResponse
      *
@@ -370,11 +371,11 @@ class Facebook
     /**
      * Sends a DELETE request to Graph and returns the result.
      *
-     * @param string                  $endpoint
-     * @param array                   $params
+     * @param string $endpoint
+     * @param array $params
      * @param AccessToken|string|null $accessToken
-     * @param string|null             $eTag
-     * @param string|null             $graphVersion
+     * @param string|null $eTag
+     * @param string|null $graphVersion
      *
      * @return FacebookResponse
      *
@@ -424,7 +425,7 @@ class Facebook
      * Sends a request to Graph for the next page of results.
      *
      * @param GraphEdge $graphEdge The GraphEdge to paginate over.
-     * @param string    $direction The direction of the pagination: next|previous.
+     * @param string $direction The direction of the pagination: next|previous.
      *
      * @return GraphEdge|null
      *
@@ -449,12 +450,12 @@ class Facebook
     /**
      * Sends a request to Graph and returns the result.
      *
-     * @param string                  $method
-     * @param string                  $endpoint
-     * @param array                   $params
+     * @param string $method
+     * @param string $endpoint
+     * @param array $params
      * @param AccessToken|string|null $accessToken
-     * @param string|null             $eTag
-     * @param string|null             $graphVersion
+     * @param string|null $eTag
+     * @param string|null $graphVersion
      *
      * @return FacebookResponse
      *
@@ -472,9 +473,9 @@ class Facebook
     /**
      * Sends a batched request to Graph and returns the result.
      *
-     * @param array                   $requests
+     * @param array $requests
      * @param AccessToken|string|null $accessToken
-     * @param string|null             $graphVersion
+     * @param string|null $graphVersion
      *
      * @return FacebookBatchResponse
      *
@@ -497,9 +498,9 @@ class Facebook
     /**
      * Instantiates an empty FacebookBatchRequest entity.
      *
-     * @param  AccessToken|string|null $accessToken  The top-level access token. Requests with no access token
+     * @param AccessToken|string|null $accessToken The top-level access token. Requests with no access token
      *                                               will fallback to this.
-     * @param  string|null             $graphVersion The Graph API version to use.
+     * @param string|null $graphVersion The Graph API version to use.
      * @return FacebookBatchRequest
      */
     public function newBatchRequest($accessToken = null, $graphVersion = null)
@@ -518,12 +519,12 @@ class Facebook
     /**
      * Instantiates a new FacebookRequest entity.
      *
-     * @param string                  $method
-     * @param string                  $endpoint
-     * @param array                   $params
+     * @param string $method
+     * @param string $endpoint
+     * @param array $params
      * @param AccessToken|string|null $accessToken
-     * @param string|null             $eTag
-     * @param string|null             $graphVersion
+     * @param string|null $eTag
+     * @param string|null $graphVersion
      *
      * @return FacebookRequest
      *
@@ -593,7 +594,7 @@ class Facebook
         $graphVersion = $graphVersion ?: $this->defaultGraphVersion;
 
         $uploader = new FacebookResumableUploader($this->app, $this->client, $accessToken, $graphVersion);
-        $endpoint = '/'.$target.'/videos';
+        $endpoint = '/' . $target . '/videos';
         $file = $this->videoToUpload($pathToFile);
         $chunk = $uploader->start($endpoint, $file);
 
@@ -602,8 +603,8 @@ class Facebook
         } while (!$chunk->isLastChunk());
 
         return [
-          'video_id' => $chunk->getVideoId(),
-          'success' => $uploader->finish($endpoint, $chunk->getUploadSessionId(), $metadata),
+            'video_id' => $chunk->getVideoId(),
+            'success' => $uploader->finish($endpoint, $chunk->getUploadSessionId(), $metadata),
         ];
     }
 

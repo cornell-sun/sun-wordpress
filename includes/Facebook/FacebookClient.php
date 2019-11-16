@@ -21,6 +21,7 @@
  * DEALINGS IN THE SOFTWARE.
  *
  */
+
 namespace Facebook;
 
 use Facebook\HttpClients\FacebookHttpClientInterface;
@@ -89,7 +90,7 @@ class FacebookClient
      * Instantiates a new FacebookClient object.
      *
      * @param FacebookHttpClientInterface|null $httpClientHandler
-     * @param boolean                          $enableBeta
+     * @param boolean $enableBeta
      */
     public function __construct(FacebookHttpClientInterface $httpClientHandler = null, $enableBeta = false)
     {

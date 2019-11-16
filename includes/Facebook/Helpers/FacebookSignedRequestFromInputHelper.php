@@ -21,6 +21,7 @@
  * DEALINGS IN THE SOFTWARE.
  *
  */
+
 namespace Facebook\Helpers;
 
 use Facebook\Facebook;
@@ -55,9 +56,9 @@ abstract class FacebookSignedRequestFromInputHelper
     /**
      * Initialize the helper and process available signed request data.
      *
-     * @param FacebookApp    $app          The FacebookApp entity.
-     * @param FacebookClient $client       The client to make HTTP requests.
-     * @param string|null    $graphVersion The version of Graph to use.
+     * @param FacebookApp $app The FacebookApp entity.
+     * @param FacebookClient $client The client to make HTTP requests.
+     * @param string|null $graphVersion The version of Graph to use.
      */
     public function __construct(FacebookApp $app, FacebookClient $client, $graphVersion = null)
     {

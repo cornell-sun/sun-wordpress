@@ -21,6 +21,7 @@
  * DEALINGS IN THE SOFTWARE.
  *
  */
+
 namespace Facebook\GraphNodes;
 
 use Facebook\FacebookRequest;
@@ -57,11 +58,11 @@ class GraphEdge extends Collection
     /**
      * Init this collection of GraphNode's.
      *
-     * @param FacebookRequest $request            The original request that generated this data.
-     * @param array           $data               An array of GraphNode's.
-     * @param array           $metaData           An array of Graph meta data like pagination, etc.
-     * @param string|null     $parentEdgeEndpoint The parent Graph edge endpoint that generated the list.
-     * @param string|null     $subclassName       The subclass of the child GraphNode's.
+     * @param FacebookRequest $request The original request that generated this data.
+     * @param array $data An array of GraphNode's.
+     * @param array $metaData An array of Graph meta data like pagination, etc.
+     * @param string|null $parentEdgeEndpoint The parent Graph edge endpoint that generated the list.
+     * @param string|null $subclassName The subclass of the child GraphNode's.
      */
     public function __construct(FacebookRequest $request, array $data = [], array $metaData = [], $parentEdgeEndpoint = null, $subclassName = null)
     {

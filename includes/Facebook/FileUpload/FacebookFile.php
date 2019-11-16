@@ -21,6 +21,7 @@
  * DEALINGS IN THE SOFTWARE.
  *
  */
+
 namespace Facebook\FileUpload;
 
 use Facebook\Exceptions\FacebookSDKException;

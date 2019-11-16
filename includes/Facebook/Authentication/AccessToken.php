@@ -21,6 +21,7 @@
  * DEALINGS IN THE SOFTWARE.
  *
  */
+
 namespace Facebook\Authentication;
 
 /**
@@ -48,7 +49,7 @@ class AccessToken
      * Create a new access token entity.
      *
      * @param string $accessToken
-     * @param int    $expiresAt
+     * @param int $expiresAt
      */
     public function __construct($accessToken, $expiresAt = 0)
     {

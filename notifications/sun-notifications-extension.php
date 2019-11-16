@@ -9,12 +9,14 @@
 /**
  * Outputs the content of the meta box
  */
-function notifications_meta_callback($post) {
-    wp_nonce_field( basename( __FILE__ ), 'notifications_nonce' );
+function notifications_meta_callback($post)
+{
+    wp_nonce_field(basename(__FILE__), 'notifications_nonce');
     include 'notifications-ui.php';
 }
 
-function notifications_custom_meta() {
+function notifications_custom_meta()
+{
     add_meta_box(
         'notification_meta', __('iOS Notifications', 'notification-textdomain'),
         'notifications_meta_callback', 'post', 'side', 'high'
@@ -26,7 +28,8 @@ add_action('add_meta_boxes', 'notifications_custom_meta');
 /**
  * Saves the notification meta input
  */
-function notifications_meta_post($new_status, $old_status, $post) {
+function notifications_meta_post($new_status, $old_status, $post)
+{
     $post_id = ($post->ID);
     if ('publish' === $new_status && 'publish' !== $old_status && $post->post_type === 'post') {
         // Checks save status
@@ -121,7 +124,8 @@ add_action('transition_post_status', 'notifications_meta_post', 10, 3);
 /**
  * Takes the stored meta data in $meta and extracts the segments
  */
-function get_included_segments($post) {
+function get_included_segments($post)
+{
     $meta = get_post_meta($post->ID);
     $segments = [];
     foreach ($meta as $category => $value) {
@@ -134,7 +138,8 @@ function get_included_segments($post) {
     return $segments;
 }
 
-function get_blurb($post) {
+function get_blurb($post)
+{
     setup_postdata($post);
     $meta = get_post_meta($post->ID);
     if ($meta['custom-blurb'][0] === '') {
@@ -153,7 +158,8 @@ function get_blurb($post) {
     return $meta['custom-blurb'][0];
 }
 
-function get_title($post) {
+function get_title($post)
+{
     $meta = get_post_meta($post->ID);
     if ($meta['custom-title'][0] === '') {
         return get_the_title($post);
@@ -161,13 +167,14 @@ function get_title($post) {
     return $meta['custom-title'][0];
 }
 
-function get_delivery_time_of_day($post) {
+function get_delivery_time_of_day($post)
+{
     $meta = get_post_meta($post->ID);
     if ($meta['send-time'][0] === '') {
         return '';
     }
     $time = explode(":", $meta['send-time'][0]);
-    $hours = (int) $time[0];
+    $hours = (int)$time[0];
     $suffix = "AM";
     if ($hours > 12) {
         $hours = $hours - 12;
@@ -177,7 +184,8 @@ function get_delivery_time_of_day($post) {
     return $new_time;
 }
 
-function get_send_option($post) {
+function get_send_option($post)
+{
     $meta = get_post_meta($post->ID);
     if ($meta['checkbox-send-option'][0] === 'no') {
         if ($meta['send-time'][0] !== '') {
@@ -188,7 +196,8 @@ function get_send_option($post) {
     return '';
 }
 
-function onesignal_notification_send($new_status, $old_status, $post) {
+function onesignal_notification_send($new_status, $old_status, $post)
+{
     if ('publish' === $new_status && 'publish' !== $old_status && $post->post_type === 'post') {
         $body = new stdClass();
         $body->app_id = 'c7e28bf2-698c-4a07-b56c-f2077e43c1b4';
@@ -216,5 +225,6 @@ function onesignal_notification_send($new_status, $old_status, $post) {
         );
     }
 }
+
 add_action('transition_post_status', 'onesignal_notification_send', 10, 3);
 ?>

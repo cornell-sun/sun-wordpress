@@ -21,6 +21,7 @@
  * DEALINGS IN THE SOFTWARE.
  *
  */
+
 namespace Facebook\GraphNodes;
 
 /**
@@ -28,7 +29,6 @@ namespace Facebook\GraphNodes;
  *
  * @package Facebook
  */
-
 class GraphAlbum extends GraphNode
 {
     /**
