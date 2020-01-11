@@ -29,6 +29,5 @@ namespace Facebook\FileUpload;
  *
  * @package Facebook
  */
-class FacebookVideo extends FacebookFile
-{
+class FacebookVideo extends FacebookFile {
 }

@@ -29,15 +29,13 @@ namespace Facebook\GraphNodes;
  *
  * @package Facebook
  */
-class GraphApplication extends GraphNode
-{
-    /**
-     * Returns the ID for the application.
-     *
-     * @return string|null
-     */
-    public function getId()
-    {
-        return $this->getField('id');
-    }
+class GraphApplication extends GraphNode {
+	/**
+	 * Returns the ID for the application.
+	 *
+	 * @return string|null
+	 */
+	public function getId() {
+		return $this->getField( 'id' );
+	}
 }
