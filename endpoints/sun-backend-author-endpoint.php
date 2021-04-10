@@ -1,0 +1,60 @@
+<?php
+
+/**
+ * Handles the /comments endpoint, which handles retrieving the associated comments
+ * for any given article ID.
+ */
+class SunAppExtension_AuthorEndpoint
+{
+
+    /**
+     * Set up and register the /comments endpoint with the rest_api_init function.
+     */
+    public static function init()
+    {
+        $cur_file_path = plugin_dir_path(__FILE__);
+        include_once $cur_file_path . "../includes/sun-backend-constants.php";
+
+        register_rest_route(PLUGIN_ENDPOINT . '/' . PRODUCTION_VERSION, '/author/(?P<author_name>[A-Za-z\+]+)(/(?P<page>\d+))?', array(
+            'methods' => 'GET',
+            'callback' => 'SunAppExtension_AuthorEndpoint::get_author_info',
+        ));
+    }
+
+    /**
+     * 
+     */
+    public static function get_author_info($request)
+    {
+        $author_name = $request->get_param("author_name");
+        $author_name = preg_replace("/\+/", ' ', $author_name);
+        $page = $request->get_param("page");
+        $author_info_dict = SunAppExtension_PostsFunctions::get_author_metadata($author_name);
+        $author_info_dict["posts"] = self::get_author_posts($author_name, $page);
+        $author_info_dict["target_name"] = $author_name;
+        return $author_info_dict;
+    }
+
+    public static function get_author_posts($author_name, $page)
+    {
+        $author_posts_query = array(
+            'posts_per_page'   => 10,
+            'orderby'          => 'post_date',
+            'order'            => 'DESC',
+            'post_status'      => 'publish',
+            'paged'             => $page ? $page : 1,
+            'meta_query'       => array(
+                array(
+                    'key'     => 'largo_byline_text',
+                    'value'   => $author_name,
+                    'compare' => 'LIKE',
+                ),
+            ),
+        );
+        $author_posts = get_posts($author_posts_query);
+
+        return array_map(function ($post) {
+            return SunAppExtension_PostsFunctions::generate_post_entry($post->ID);
+        },  $author_posts);
+    }
+}

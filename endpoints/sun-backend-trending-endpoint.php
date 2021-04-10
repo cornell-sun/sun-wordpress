@@ -132,5 +132,3 @@ class SunAppExtension_TrendingEndpoint
         }
     }
 }
-
-?>

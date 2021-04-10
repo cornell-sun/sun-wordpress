@@ -63,6 +63,38 @@ class SunAppExtension_PostsFunctions
         return $arr;
     }
 
+
+    /**
+     * Given the author name, we query for the author within the
+     * Wordpress Database and return associated metadata
+     */
+    public static function get_author_metadata($author_name)
+    {
+        $author_query = array(
+            'search' => '*' . $author_name . '*',
+            'search_columns' => array('display_name'),
+        );
+
+        $author_query = new WP_User_Query($author_query);
+        $author_query_res = $author_query->get_results();
+        $author_metadata = array();
+        if (!empty($author_query_res)) {
+            $author_obj = $author_query_res[0];
+            $author_id = $author_obj->data->ID;
+            $author_wp_data = get_user_meta($author_id);
+            $author_metadata["id"] = $author_id;
+            $author_metadata["name"] = $author_name;
+            $author_metadata["avatar_url"] = get_avatar_url($author_id);
+            $author_metadata["bio"] = $author_wp_data["description"][0];
+            $author_metadata["twitter"] = $author_wp_data["twitter"][0];
+            $author_metadata["linkedin"] = $author_wp_data["linkedin"][0];
+            $author_metadata["email"] = $author_obj->data->user_email;
+        } else {
+            $author_metadata["name"] = $author_name;
+        }
+        return $author_metadata;
+    }
+
     /**
      * Return the information about the author for a given post with
      * id = $post_id. This includes id, name, url for the avatar, bio snippet
@@ -72,63 +104,19 @@ class SunAppExtension_PostsFunctions
     {
         $post = get_post($post_id);
         $post_meta = get_post_meta($post_id);
-        $author_names = explode(", ", $post_meta["largo_byline_text"][0]);
+        $author_names = explode(" and ", $post_meta["largo_byline_text"][0]);
         if ($author_names[0] === "") {
             // no byline author text, default to normal author
-            $author_id = (int)$post->post_author;
-            $user_obj = get_user_by("id", $author_id);
-            //            $user_meta = get_user_meta( $author_id );
-            // $user = $user_obj->display_name;
-            $user = array(
-                "id" => $author_id,
-                "name" => $user_obj->display_name,
-                "avatar_url" => get_avatar_url($author_id),
-                "bio" => $user_meta["description"][0],
-                "link" => get_author_posts_url($author_id),
-                "twitter" => $user_meta["twitter"][0],
-                "linkedin" => $user_meta["linkedin"][0],
-                "email" => $user_obj->data->user_email,
-            );
-            $user = self::set_empty_null($user);
-            return [$user];
+            $author_id = $post->post_author;
+            $author_obj = get_user_by("id", $author_id);
+            $author_name = $author_obj->display_name;
+            return [self::get_author_metadata($author_name)];
         }
 
         $users = array();
         foreach ($author_names as $name) {
-            // reverse search for user by display name
-
-            $query_args = array(
-                'search' => '*' . $name . '*',
-                'search_columns' => array('display_name'),
-            );
-
-            $user_query = new WP_User_Query($query_args);
-
-            $res = $user_query->get_results();
-            if (!empty($res)) {
-                // query found user entry, add it to the array
-                $user = $res[0];
-                $user_id = $user->data->ID;
-                $user_meta = get_user_meta($user_id);
-
-                $user = array(
-                    "id" => $user_id,
-                    "name" => $user->display_name,
-                    "avatar_url" => get_avatar_url($user_id),
-                    "bio" => $user_meta["description"][0],
-                    "link" => get_author_posts_url($user_id),
-                    "twitter" => $user_meta["twitter"][0],
-                    "linkedin" => $user_meta["linkedin"][0],
-                    "email" => $user->data->user_email,
-                );
-                //If any of the values are empty strings, set them to null instead
-                $user = self::set_empty_null($user);
-                array_push($users, $user);
-            } else {
-                // empty results, just return the name for now
-                $name_dict = ["name" => $name];
-                array_push($users, $name_dict);
-            }
+            $name = trim($name);
+            array_push($users, self::get_author_metadata($name));
         }
         return $users;
     }

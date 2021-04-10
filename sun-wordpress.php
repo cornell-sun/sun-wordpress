@@ -1,4 +1,5 @@
 <?php
+
 /** Error reporting: Uncomment this to debug */
 // error_reporting(E_ALL);
 // ini_set('display_errors', 'on');
@@ -31,8 +32,8 @@ if (!class_exists('SunAppExtension_Plugin')) {
         {
             include_once 'endpoints/sun-backend-featured-endpoint.php';
             include_once 'endpoints/sun-backend-trending-endpoint.php';
-            include_once 'endpoints/sun-backend-comments-endpoint.php';
             include_once 'endpoints/sun-backend-url-to-id-endpoint.php';
+            include_once 'endpoints/sun-backend-author-endpoint.php';
             include_once 'notifications/sun-notifications-extension.php';
             include_once 'includes/sun-backend-constants.php';
             include_once 'includes/sun-backend-config.php';
@@ -44,8 +45,8 @@ if (!class_exists('SunAppExtension_Plugin')) {
             add_action('rest_api_init', function () {
                 SunAppExtension_TrendingEndpoint::init();
                 SunAppExtension_FeaturedEndpoint::init();
-                SunAppExtension_CommentsEndpoint::init();
                 SunAppExtension_UrlToIdEndpoint::init();
+                SunAppExtension_AuthorEndpoint::init();
             });
 
             // set up custom plugin styles
