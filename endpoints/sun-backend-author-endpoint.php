@@ -15,7 +15,7 @@ class SunAppExtension_AuthorEndpoint
         $cur_file_path = plugin_dir_path(__FILE__);
         include_once $cur_file_path . "../includes/sun-backend-constants.php";
 
-        register_rest_route(PLUGIN_ENDPOINT . '/' . PRODUCTION_VERSION, '/author/(?P<author_name>[A-Za-z0-9\+\%]+)(\?page=(/(?P<page>\d+)))?', array(
+        register_rest_route(PLUGIN_ENDPOINT . '/' . PRODUCTION_VERSION, '/author/(?P<author_name>[^\/ ]+)(\?page=(/(?P<page>\d+)))?', array(
             'methods' => 'GET',
             'callback' => 'SunAppExtension_AuthorEndpoint::get_author_info',
         ));
