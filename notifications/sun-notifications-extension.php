@@ -7,7 +7,7 @@
  */
 
 /**
- * Outputs the content of the meta box
+ * Outputs the contents of the meta box
  */
 function notifications_meta_callback($post)
 {
@@ -26,7 +26,7 @@ function notifications_custom_meta()
 add_action('add_meta_boxes', 'notifications_custom_meta');
 
 /**
- * Saves the notification meta input
+ * Saves the notification meta input from the UI input boxes
  */
 function notifications_meta_post($new_status, $old_status, $post)
 {
@@ -119,6 +119,8 @@ function notifications_meta_post($new_status, $old_status, $post)
     }
 }
 
+// Register notifications_meta_post callback to be triggered on any
+// transition in the post status
 add_action('transition_post_status', 'notifications_meta_post', 10, 3);
 
 /**
@@ -138,6 +140,9 @@ function get_included_segments($post)
     return $segments;
 }
 
+/**
+ * Get the blurb from the published $post for the notification
+ */
 function get_blurb($post)
 {
     setup_postdata($post);
@@ -158,6 +163,9 @@ function get_blurb($post)
     return $meta['custom-blurb'][0];
 }
 
+/**
+ * Get the title from the published $post for the notification
+ */
 function get_title($post)
 {
     $meta = get_post_meta($post->ID);
@@ -167,6 +175,9 @@ function get_title($post)
     return $meta['custom-title'][0];
 }
 
+/**
+ * Get the time to deliver the $post
+ */
 function get_delivery_time_of_day($post)
 {
     $meta = get_post_meta($post->ID);
@@ -184,6 +195,10 @@ function get_delivery_time_of_day($post)
     return $new_time;
 }
 
+/**
+ * Get the option for how the post should be delivered. Check the
+ * OneSignal API for more details
+ */
 function get_send_option($post)
 {
     $meta = get_post_meta($post->ID);
@@ -196,6 +211,10 @@ function get_send_option($post)
     return '';
 }
 
+/**
+ * When the post is published, the post is sent to the third-party service
+ * OneSignal to send the push notification to subscribers
+ */
 function onesignal_notification_send($new_status, $old_status, $post)
 {
     if ('publish' === $new_status && 'publish' !== $old_status && $post->post_type === 'post') {
@@ -227,4 +246,3 @@ function onesignal_notification_send($new_status, $old_status, $post)
 }
 
 add_action('transition_post_status', 'onesignal_notification_send', 10, 3);
-?>

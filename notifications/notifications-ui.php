@@ -1,3 +1,9 @@
+<?php
+/**
+ * Provides the custom UI for the notifications extension. This is visible
+ * at https://cornellsun.com/wp-admin/post-new.php.
+ */
+?>
 <p>Send intelligent notifications to the Cornell Sun iOS app.</p>
 <div class="custom_info_wrapper">
     <div class="custom_info_item">
